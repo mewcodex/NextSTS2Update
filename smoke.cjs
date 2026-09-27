@@ -37,6 +37,7 @@ const context = vm.createContext({
 });
 vm.runInContext(fs.readFileSync('card-generator.js', 'utf8'), context);
 vm.runInContext(fs.readFileSync('world-generator.js', 'utf8'), context);
+vm.runInContext(fs.readFileSync('patch-copy.js', 'utf8'), context);
 vm.runInContext(generator, context);
 setImmediate(() => {
   const terms = vm.runInContext('({osty:labels.OstyDamage[0],summon:labels.Summon[0],forge:labels.Forge[0],stars:labels.Stars[0],doom:labels.DoomPower[0],plating:labels.PlatingPower[0]})', context);
@@ -46,6 +47,27 @@ setImmediate(() => {
   assert.strictEqual(terms.stars, '辉星');
   assert.strictEqual(terms.doom, '灾厄');
   assert.strictEqual(terms.plating, '覆甲');
+  const copy = vm.runInContext('patchCopy', context);
+  for (const [name, build, minimum] of [
+    ['intro', () => copy.intro(), 60], ['general', () => copy.general(), 15],
+    ['event', () => copy.event(), 8],
+    ['bug', () => copy.bug('general'), 35], ['ux', () => copy.ux(), 30],
+    ['modding', () => copy.modding(), 15], ['writing', () => copy.writing(), 15],
+    ['localization', () => copy.localization(), 15]
+  ]) {
+    const variants = new Set(Array.from({ length: 400 }, build).map(line => line[0]));
+    assert(variants.size >= minimum, `${name} copy still repeats too often: ${variants.size} variants`);
+  }
+  const productionIndex = cards.findIndex(card => card.en === 'Production');
+  const nonGainIndex = cards.findIndex(card => card.en === "Banshee's Cry");
+  const productionEnergy = vm.runInContext(`candidateVars(catalog[${productionIndex}])`, context).find(value => value.kind === 'Energy');
+  assert(productionEnergy, 'Energy gain is missing from numeric candidates');
+  assert.strictEqual(vm.runInContext(`variableLabel(catalog[${productionIndex}], catalog[${productionIndex}].vars[0])[0]`, context), '获得的能量');
+  assert(!vm.runInContext(`candidateVars(catalog[${nonGainIndex}])`, context).some(value => value.kind === 'Energy'),
+    'A cost reduction was misclassified as Energy gain');
+  const productionChange = vm.runInContext(`changeCard(catalog[${productionIndex}])`, context);
+  assert(vm.runInContext('lineFor', context)(productionChange).includes('获得的能量从'),
+    'Energy gain adjustment does not name the gained Energy');
   const powerFile = path.join(__dirname, '..', 'export', '111', 'localization', 'zhs', 'powers.json');
   if (fs.existsSync(powerFile)) {
     const officialPowers = JSON.parse(fs.readFileSync(powerFile, 'utf8'));
@@ -89,6 +111,8 @@ setImmediate(() => {
   assert.strictEqual(world.relics.find(relic => relic.id === 'REGALITE').rarity, 'Uncommon', 'Regalite must be a regular relic');
   assert(world.relics.find(relic => relic.id === 'REGALITE').descEn.includes('first time') &&
     world.relics.find(relic => relic.id === 'REGALITE').descEn.includes('[blue]4[/blue]'), 'Regalite baseline is older than v0.111');
+  assert(world.relics.find(relic => relic.id === 'SIGNET_RING').descEn.includes('[blue]888[/blue]'),
+    'Signet Ring baseline is older than v0.110');
   assert.strictEqual(world.monsters.find(monster => monster.id === 'AXEBOT').moves.find(move => move.id === 'HAMMER_UPPERCUT').damage.normal, 14,
     'Axebot baseline is older than v0.111');
   const relicFile = path.join(__dirname, '..', 'export', '111', 'localization', 'zhs', 'relics.json');
@@ -152,8 +176,14 @@ setImmediate(() => {
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
     assert(en.includes('<ul class="rework-details"><li>Old: ') && en.includes('</li><li>New: '), 'English rework lacks old/new card details');
     vm.runInContext("setLanguage('zh')", context);
-    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length+patch.localization.length, entries:patch.entries, bugs:patch.bugs, enemies:patch.enemies, relics:patch.relics, ancients:patch.ancients})', context);
+    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, generalLines:patch.general, extra:patch.relics.length+patch.events.length+patch.writing.length+patch.localization.length, entries:patch.entries, bugs:patch.bugs, ux:patch.ux, modding:patch.modding, enemies:patch.enemies, relics:patch.relics, ancients:patch.ancients})', context);
     assert(stats.bugs.every(bug => ['general', 'enemies', 'multiplayer'].includes(bug.category)), 'Bug entry has no official-style section');
+    for (const lines of [stats.bugs.map(bug => bug.text), stats.ux, stats.modding, stats.generalLines])
+      assert.strictEqual(new Set(lines.map(line => line[0])).size, lines.length, 'Duplicate assembled lines in one patch');
+    if (stats.generalLines.length > 1) {
+      const categories = stats.generalLines.map(line => /商人/.test(line[0]) ? 'merchant' : /地图/.test(line[0]) ? 'map' : 'reward');
+      assert.strictEqual(new Set(categories).size, categories.length, 'Contradictory general changes in one patch');
+    }
     for (const enemy of stats.enemies) if (enemy.id) { enemyIds.add(enemy.id); enemyTypes.add(enemy.type); }
     for (const relic of stats.relics) {
       relicIds.add(relic.id); relicRarities.add(relic.rarity);
@@ -164,6 +194,9 @@ setImmediate(() => {
       if (ancient.kind === 'relic') assert.strictEqual(ancient.rarity, 'Ancient', 'Regular relic placed under Ancients');
       assert(ancient.name !== 'Regalite' && ancient.id !== 'REGALITE', 'Regalite placed under Ancients');
     }
+    assert(!(stats.ancients.some(ancient => ancient.name === "Nonupeipe's Signet Ring") &&
+      stats.ancients.some(ancient => ancient.id === 'SIGNET_RING' && ancient.kind === 'relic')),
+    'Signet Ring appears twice in one Ancient section');
     const descriptions = Object.values(stats.entries).flat().filter(entry => entry.thought).map(entry => entry.thought[0]);
     assert.strictEqual(new Set(descriptions).size, descriptions.length, 'Repeated card explanation');
     for (const entries of Object.values(stats.entries)) {
@@ -173,6 +206,10 @@ setImmediate(() => {
       if (entry.thought) assert(!/这一角色|该角色|当前角色|this character/.test(entry.thought.join(' ')), 'Colorless treated as character');
     }
     for (const entry of Object.values(stats.entries).flat()) {
+      if (entry.variable?.kind === 'Energy') {
+        assert.strictEqual(entry.label[0], '获得的能量', 'Energy gain uses an ambiguous label');
+        assert(vm.runInContext('lineFor', context)(entry).includes('获得的能量从'), 'Energy gain line omits its context');
+      }
       if (entry.kind === 'rework') {
         const detail = vm.runInContext('lineFor', context)(entry);
         assert(/旧：[^<]+ - (攻击牌|技能牌|能力牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'Original rework card frame is missing');

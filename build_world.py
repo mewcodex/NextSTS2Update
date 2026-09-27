@@ -68,6 +68,10 @@ for ident, en in relics_en.items():
         description_zh = "每回合首次生成卡牌时，获得[blue]4[/blue]点[gold]格挡[/gold]。"
         raw_en = "The first time you create a card each turn, gain [blue]{Block}[/blue] [gold]Block[/gold]."
         raw_zh = "每回合首次生成卡牌时，获得[blue]{Block}[/blue]点[gold]格挡[/gold]。"
+    if ident == "SIGNET_RING":
+        title = "诺奴佩普的图章戒指"
+        description_en = "Upon pickup, gain [blue]888[/blue] [gold]Gold[/gold]."
+        description_zh = "拾起时，获得[blue]888[/blue]枚[gold]金币[/gold]。"
     relics.append({"id": ident, "en": en["name"], "zh": title,
                    "rarity": en["rarity"], "pool": en["pool"],
                    "descEn": description_en, "descZh": description_zh,

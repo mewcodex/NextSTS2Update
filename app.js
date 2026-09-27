@@ -89,27 +89,6 @@ Object.assign(labels, {
   MaxHp: ['最大生命值', 'Max HP'], PanacheDamage: ['伤害', 'damage'],
   BombDamage: ['伤害', 'damage'], BlockOnExhaust: ['格挡', 'Block']
 });
-const thoughts = {
-  Damage: [
-    ['这张牌在前期需要更明确的即时收益，但我们希望它的核心玩法保持不变。', 'We wanted this to offer a clearer immediate payoff early in a run while keeping its core use intact.'],
-    ['这个数值在升级前后都略显保守，因此两边一起调整。', 'The number felt a little conservative both before and after upgrading, so we adjusted both.']
-  ],
-  Block: [
-    ['我们希望它能在防御回合里更稳定地找到位置。', 'We want this to find a more reliable place in defensive turns.'],
-    ['这应该能让它与其他防御选择之间的取舍更有意思。', 'This should make the choice between it and other defensive options more interesting.']
-  ],
-  Cards: [
-    ['多一张牌会带来很多连锁效果，我们会特别关注它的表现。', 'One extra card can have a lot of knock-on effects, so we’ll be watching this one closely.']
-  ],
-  default: [
-    ['这属于一次小幅试验，我们会根据反馈继续调整。', 'This is a small experiment, and we’ll keep iterating based on feedback.'],
-    ['我们想让它的回报与使用条件更加匹配。', 'We want its payoff to better match the conditions needed to use it.']
-  ]
-};
-const nerfThoughts = [
-  ['这张牌的回报略高于同类选择，因此我们先做一次小幅调整。', 'Its payoff has been a little high compared with similar options, so we’re trying a small adjustment.'],
-  ['我们想为其他选择留出一点空间，并会继续观察它的表现。', 'We want to leave a little room for other options, and we’ll keep watching how it performs.']
-];
 const wordBanks = {
   Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']] },
   Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影佯攻', 'Umbral Feint']] },
@@ -132,13 +111,6 @@ const ancientReferences = [
   { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', type: 'relic', stat: ['金币', 'Gold'], base: 888, direction: -1, benefit: true },
   { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', type: 'card', stat: ['最大生命值损失', 'Max HP loss'], base: 2, benefit: false },
   { name: "Pael's Relax", zh: '佩尔的放松', type: 'card', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
-];
-const generalChanges = [
-  ['进阶6“通货膨胀”下，商人移除卡牌的初始费用从100金币提升至125金币。', 'At Ascension 6, Inflation increases the initial merchant card removal cost from 100 to 125 Gold.'],
-  ['进阶6“通货膨胀”下，商人移除卡牌的费用每次增加25金币，而非50金币。', 'At Ascension 6, Inflation now increases the merchant card removal cost by 25 Gold each time instead of 50.'],
-  ['略微增加了地图上休息处的数量。', 'Slightly increased the number of Rest Sites on the map.'],
-  ['略微减少了地图上？房间的数量。', 'Slightly decreased the number of ? rooms on the map.'],
-  ['精英战斗后的卡牌奖励现在略微提高了稀有牌的出现概率。', 'Rare cards now appear slightly more often in card rewards after Elite combats.']
 ];
 const enemyChanges = [
   {name:['巨斧机器人','Axebot'], move:['打磨','Sharpen'], kind:'intent', text:['“打磨”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
@@ -205,11 +177,13 @@ function candidateVars(card) {
   return card.vars.filter(v => v.base > 0 && v.base < 10000 && v.base !== null &&
     !['CalculationBase', 'CalculatedDamage'].includes(v.kind) &&
     (card.descEn.includes('{' + v.id + ':') || card.descZh.includes('{' + v.id + ':')) &&
+    (v.kind !== 'Energy' || /获得\s*$/.test(card.descZh.replace(/\[\/?[a-zA-Z]+\]/g, '').split('{' + v.id + ':')[0])) &&
     Boolean(labels[v.id] || labels[v.kind]) && !/^(If|Condition|Chance)/.test(v.id) &&
     !(v.id === 'Cards' && /(?:大于等于|at least)\s*\{Cards:/i.test(card.descZh + card.descEn)));
 }
 function variableLabel(card, variable) {
   const description = card.descZh.replace(/\[\/?[a-zA-Z]+\]/g, '');
+  if (variable.kind === 'Energy') return ['获得的能量', 'Energy gain'];
   if (variable.id === 'Cards') {
     if (/抽\s*\{Cards:/.test(description)) return ['抽牌数', 'cards drawn'];
     if (/丢弃\s*\{Cards:/.test(description)) return ['弃牌数', 'cards discarded'];
@@ -246,7 +220,7 @@ function changeCard(card) {
   const benefit = direction === polarity;
   return { kind: 'number', card, variable, label, old: valuePair(variable.base, variable.up),
     next: valuePair(nextBase, nextUp), benefit, thought: Math.random() < .23 ?
-      pick(benefit ? (thoughts[variable.kind] || thoughts.default) : nerfThoughts) : null };
+      patchCopy.cardThought(variable, benefit) : null };
 }
 function hasIndependentUpgradeBenefit(card) {
   if (Number.isInteger(card.cost) && Number.isInteger(card.upCost) && card.upCost < card.cost) return true;
@@ -292,10 +266,7 @@ function changeUpgrade(card) {
     if (next !== variable.up) {
       const label = variableLabel(card, variable);
       return {kind:'upgrade', card, variable, label, old:String(variable.up), next:String(next),
-        thought: pick([
-          ['此前升级这张牌的收益不够明显。我们希望这次调整能让升级成为一个更有竞争力的选择。', 'The upgrade was not offering enough. We want this to make upgrading the card a more competitive choice.'],
-          ['未升级时已经足够实用，所以这次只调整升级效果。', 'The base card is doing its job, so this pass only changes the upgraded effect.']
-        ])};
+        thought: patchCopy.cardThought(variable, true, 'upgrade')};
     }
   }
   if (Number.isInteger(card.upCost) && card.upCost > 0) return {kind:'upgradeCost', card,
@@ -312,7 +283,7 @@ function changeBaseOnly(card) {
   if (next === variable.base || polarity * (variable.up - next) <= 0) return null;
   return {kind:'baseOnly', card, variable, label: variableLabel(card, variable),
     old:String(variable.base), next:String(next),
-    thought:['未升级时的表现落后于升级后，因此这次只调整基础数值。', 'The base card was lagging behind its upgrade, so this change only adjusts the unupgraded value.']};
+    thought:patchCopy.cardThought(variable, true, 'base')};
 }
 function changeCost(card) {
   if (!Number.isInteger(card.cost) || !Number.isInteger(card.upCost) ||
@@ -371,11 +342,7 @@ function makeRework(card) {
     oldFrame: { rarity: card.rarity, type: card.type, cost: card.cost, upCost: card.upCost },
     newFrame: { rarity: card.rarity, type: generated.type, cost: generated.cost, upCost: generated.upCost },
     signature: generated.signature,
-    thought: pick([
-      ['我们希望它有更明确的构筑方向，同时保留原本的主题。', 'We want this to point toward a clearer build while keeping the card’s original theme.'],
-      ['旧版本很难在合适的时机发挥作用，所以我们尝试了更直接的效果。', 'The old version had trouble finding the right moment, so we’re trying a more direct effect.'],
-      ['这是一次幅度较大的实验，欢迎告诉我们它在实战中的表现。', 'This is a larger experiment; please let us know how it plays in real runs.']
-    ]) };
+    thought: patchCopy.reworkThought() };
 }
 function makeNew(pool, existingEntries = []) {
   const bank = wordBanks[pool];
@@ -386,13 +353,7 @@ function makeNew(pool, existingEntries = []) {
   return { kind: 'new', pool, name: bank.names[index], effect: generated.effect,
     frame: { rarity: 'Uncommon', type: generated.type, cost: generated.cost, upCost: generated.upCost },
     signature: generated.signature,
-    thought: pick(pool === 'Colorless' ? [
-      ['我们想让无色牌为不同牌组提供一种新的选择。', 'We wanted this Colorless card to offer a new option across different decks.'],
-      ['这张无色牌可能会与多种机制产生互动，我们会关注它的表现。', 'This Colorless card may interact with several mechanics, and we’ll watch how it performs.']
-    ] : [
-      ['我们想给这一角色再添一种围绕其核心资源构筑的选择。', 'We wanted another build option around this character’s core resource.'],
-      ['这张牌旨在连接已有的两种玩法，具体强度还需要更多测试。', 'This card aims to connect two existing play patterns; its exact power still needs more testing.']
-    ]) };
+    thought: patchCopy.newThought(pool) };
 }
 function organizeEntries(entries) {
   const usedThoughts = new Set();
@@ -411,6 +372,26 @@ function changeDirection(oldValue, nextValue) {
 }
 function englishDirection(oldValue, nextValue) {
   return Number.parseInt(nextValue, 10) > Number.parseInt(oldValue, 10) ? 'increased' : 'decreased';
+}
+function uniqueCopy(count, generated, fixed = [], generatedChance = .8) {
+  const result = [], seen = new Set();
+  for (let attempt = 0; result.length < count && attempt < count * 30; attempt++) {
+    const line = Math.random() < generatedChance || !fixed.length ? generated() : pick(fixed);
+    if (!seen.has(line[0])) { result.push(line); seen.add(line[0]); }
+  }
+  return result;
+}
+function bugList(count) {
+  const fixed = bugs.map((item, index) => ({ text: item[0], category: bugCategories[index] }));
+  const result = ['general', 'enemies', 'multiplayer'].map(category => ({ text: patchCopy.bug(category), category }));
+  const seen = new Set(result.map(item => item.text[0]));
+  for (let attempt = 0; result.length < count && attempt < count * 30; attempt++) {
+    const category = pick(['general', 'general', 'enemies', 'multiplayer']);
+    const candidates = fixed.filter(item => item.category === category);
+    const item = Math.random() < .8 ? { text: patchCopy.bug(category), category } : pick(candidates);
+    if (!seen.has(item.text[0])) { result.push(item); seen.add(item.text[0]); }
+  }
+  return shuffle(result);
 }
 function generatePatch() {
   const entries = {};
@@ -447,31 +428,38 @@ function generatePatch() {
     if (removable.length) entries[removePool].push({ kind: 'remove', card: pick(removable),
       thought: ['这张牌目前与该角色的其他选择过于相似。我们会观察移除后牌池的表现。', 'This card currently overlaps too much with other options for this character. We’ll watch how the pool feels without it.'] });
   }
-  const ancients = shuffle(ancientReferences).slice(0, rand(1, 2)).map(item => {
+  const ancients = (Math.random() < .45 ? shuffle(ancientReferences).slice(0, 1) : []).map(item => {
     const direction = item.direction || (Math.random() < .65 ? (item.benefit ? 1 : -1) : (item.benefit ? -1 : 1));
     const next = numericStep(item.base, direction, item.stat[1]);
     return { ...item, old: valuePair(item.base, item.up || item.base),
       next: valuePair(next, item.up ? item.up + next - item.base : next),
       buff: direction * (item.benefit ? 1 : -1) > 0 };
   });
-  if (Math.random() < .68) ancients.unshift(worldGenerator.ancientMove(world));
-  if (Math.random() < .55) ancients.push(worldGenerator.relic(world, 'Ancient'));
+  if (Math.random() < .75) ancients.unshift(worldGenerator.ancientMove(world));
+  if (Math.random() < .78 || !ancients.length) {
+    let relic = worldGenerator.relic(world, 'Ancient');
+    for (let tries = 0; tries < 8 && ancients.some(item => item.name === "Nonupeipe's Signet Ring" && relic.id === 'SIGNET_RING'); tries++)
+      relic = worldGenerator.relic(world, 'Ancient');
+    if (!ancients.some(item => item.name === "Nonupeipe's Signet Ring" && relic.id === 'SIGNET_RING')) ancients.push(relic);
+  }
   const enemies = worldGenerator.enemies(world);
   if (Math.random() < .28) {
     const intent = pick(enemyChanges.filter(item => !enemies.some(enemy => enemy.name[1] === item.name[1])));
     if (intent) enemies.push(intent);
   }
   organizeEntries(entries);
-  patch = { intro: pick(intros), bridge: pick(bridges), ending: pick(endings), entries, ancients,
-    general: Math.random() < .8 ? shuffle(generalChanges).slice(0, rand(1, 2)) : [],
+  patch = { intro: Math.random() < .8 ? patchCopy.intro() : pick(intros),
+    bridge: Math.random() < .8 ? patchCopy.bridge() : pick(bridges),
+    ending: Math.random() < .8 ? patchCopy.ending() : pick(endings), entries, ancients,
+    general: Math.random() < .8 ? shuffle(['merchant', 'map', 'reward']).slice(0, rand(1, 2)).map(kind => patchCopy.general(kind)) : [],
     enemies,
     relics: Math.random() < .72 ? worldGenerator.relics(world) : [],
-    events: Math.random() < .46 ? shuffle(eventChanges).slice(0, 1) : [],
-    writing: Math.random() < .62 ? shuffle(writingLines).slice(0, rand(1, 2)) : [],
-    localization: Math.random() < .48 ? shuffle(localizationLines).slice(0, rand(1, 2)) : [],
-    ux: shuffle(uxLines).slice(0, rand(3, 5)),
-    bugs: shuffle(bugs.map((item, index) => ({text:item[0], category:bugCategories[index]}))).slice(0, rand(6, 9)),
-    modding: shuffle(modLines).slice(0, rand(2, 4)), likes: rand(420, 2700), comments: rand(55, 430) };
+    events: Math.random() < .46 ? [Math.random() < .8 ? patchCopy.event() : pick(eventChanges)] : [],
+    writing: Math.random() < .62 ? uniqueCopy(rand(1, 2), patchCopy.writing, writingLines) : [],
+    localization: Math.random() < .48 ? uniqueCopy(rand(1, 2), patchCopy.localization, localizationLines) : [],
+    ux: uniqueCopy(rand(3, 5), patchCopy.ux, uxLines),
+    bugs: bugList(rand(6, 9)),
+    modding: uniqueCopy(rand(2, 4), patchCopy.modding, modLines), likes: rand(420, 2700), comments: rand(55, 430) };
   liked = false;
   disliked = false;
   render();
@@ -521,7 +509,9 @@ function lineFor(entry) {
   if (['upgrade','upgradeCost','baseOnly'].includes(entry.kind)) {
     const label = entry.kind === 'upgradeCost' ? ['耗能','cost'] : entry.label;
     if (language === 'zh') {
-      const subject = entry.kind === 'baseOnly' ? '未升级时的' + tr(label) :
+      const subject = entry.variable?.kind === 'Energy' ?
+        (entry.kind === 'baseOnly' ? '未升级时获得的能量' : '升级后获得的能量') :
+        entry.kind === 'baseOnly' ? '未升级时的' + tr(label) :
         entry.kind === 'upgradeCost' ? '升级后' + tr(label) : '升级后的' + tr(label);
       return '<li>加强了<strong>' + name + '</strong>：' + escapeHtml(subject) + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next + '</li>' + thoughtFor(entry);
     }
