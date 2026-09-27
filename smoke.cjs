@@ -27,9 +27,9 @@ const context = vm.createContext({
 vm.runInContext(generator, context);
 setImmediate(() => {
   const terms = vm.runInContext('({osty:labels.OstyDamage[0],summon:labels.Summon[0],forge:labels.Forge[0],stars:labels.Stars[0],doom:labels.DoomPower[0],plating:labels.PlatingPower[0]})', context);
-  assert.strictEqual(terms.osty, '奥斯提伤害');
+  assert.strictEqual(terms.osty, '奥斯提造成的伤害');
   assert.strictEqual(terms.summon, '召唤生命值');
-  assert.strictEqual(terms.forge, '铸造数值');
+  assert.strictEqual(terms.forge, '铸造值');
   assert.strictEqual(terms.stars, '辉星');
   assert.strictEqual(terms.doom, '灾厄');
   assert.strictEqual(terms.plating, '覆甲');
@@ -45,6 +45,7 @@ setImmediate(() => {
   assert.strictEqual(vm.runInContext("cleanDescription('{Stars:diff()}{singleStarIcon}', {vars:[{id:'Stars',base:2,up:3}]}, 'zh')", context), '2(3)点辉星');
   const banks = vm.runInContext('wordBanks', context);
   const draftFrames = vm.runInContext('draftFrames', context);
+  assert.strictEqual(vm.runInContext('bugCategories.length === bugs.length', context), true, 'Bug sections must cover every fix');
   for (const bank of Object.values(banks)) {
     for (const name of bank.names) {
       assert(!cards.some(card => card.en.toLowerCase() === name[1].toLowerCase() || card.zh === name[0]), `New card name already exists: ${name[1]}`);
@@ -102,7 +103,8 @@ setImmediate(() => {
   for (let i = 0; i < 150; i++) {
     vm.runInContext('generatePatch()', context);
     const zh = element('article-content').innerHTML;
-    assert(zh.includes('先古之民') && zh.includes('敌人') && zh.includes('模组开发'));
+    assert(zh.includes('先古之民') && zh.includes('敌人') && zh.includes('模组制作'));
+    assert(/<h2>漏洞修复：<\/h2><h3>(通用|敌人|多人游戏)：<\/h3>/.test(zh), 'Chinese bug section lacks categories');
     assert(zh.includes('很可惜，并不是真的。'));
     assert.strictEqual(element('side-note').textContent, '很可惜，并不是真的。');
     assert(!/undefined|\{[^}]+\}/.test(zh), 'Unresolved content in Chinese');
@@ -111,12 +113,15 @@ setImmediate(() => {
     vm.runInContext("setLanguage('en')", context);
     const en = element('article-content').innerHTML;
     assert(en.includes('Ancients') && en.includes('MODDING'));
+    assert(/(?:Buffed|Nerfed|Changed) <strong>[^<]+<\/strong> card:/.test(en), 'English card changes lack official-style type labels');
+    assert(en.includes('<h2>BUG FIXES:</h2>') && /<h3>(General|Enemies|Multiplayer):<\/h3>/.test(en), 'English bug section lacks categories');
     assert(en.includes("Unfortunately, it isn&#39;t real."));
     assert.strictEqual(element('side-note').textContent, "Unfortunately, it isn't real.");
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
     assert(en.includes('<ul class="rework-details"><li>Old: ') && en.includes('</li><li>New: '), 'English rework lacks old/new card details');
     vm.runInContext("setLanguage('zh')", context);
-    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length, entries:patch.entries})', context);
+    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length+patch.localization.length, entries:patch.entries, bugs:patch.bugs})', context);
+    assert(stats.bugs.every(bug => ['general', 'enemies', 'multiplayer'].includes(bug.category)), 'Bug entry has no official-style section');
     const descriptions = Object.values(stats.entries).flat().filter(entry => entry.thought).map(entry => entry.thought[0]);
     assert.strictEqual(new Set(descriptions).size, descriptions.length, 'Repeated card explanation');
     for (const entries of Object.values(stats.entries)) {

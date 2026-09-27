@@ -27,9 +27,10 @@ const ui = {
   like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['下载截图', 'Download image'],
   dislike: ['踩', 'Dislike'], copied: ['已保存', 'Saved'],
   content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
-  bugs: ['错误修复：', 'BUG FIXES:'], modding: ['模组开发：', 'MODDING:'],
+  bugs: ['漏洞修复：', 'BUG FIXES:'], modding: ['模组制作：', 'MODDING:'],
   general: ['通用', 'General'], enemies: ['敌人', 'Enemies'], multiplayer: ['多人游戏', 'Multiplayer'],
-  relics: ['遗物', 'Relics'], events: ['事件', 'Events'], writing: ['文本与本地化：', 'WRITING & LOCALIZATION:']
+  relics: ['遗物', 'Relics'], events: ['事件', 'Events'], writing: ['文本：', 'WRITING:'],
+  localization: ['本地化：', 'LOCALIZATION:']
 };
 function compactZh(value) {
   return String(value).replace(/([\p{Script=Han}])\s+(?=[\d(（])/gu, '$1')
@@ -42,24 +43,24 @@ const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
 })[char]);
 
 const intros = [
-  ['又到了 Beta 更新的时候，爬塔者们！这次我们继续调整一些牌组中常见的选择，也解决了几处在多人游戏里不太容易复现的问题。', 'It’s time for another beta patch, Slayers! This round takes another pass at a few familiar deck choices and addresses some harder-to-reproduce multiplayer issues.'],
-  ['我们回来了！短暂休息之后，团队重新投入了爬塔工作。这次更新以平衡和稳定性为主，同时为后续的较大内容打下基础。', 'We’re back! After a short break, the team has returned to the Spire. This update focuses on balance and stability while laying groundwork for larger things ahead.'],
-  ['又一个 Beta 补丁来了！本次有几项卡牌重做、一些数值调整，以及一长串只有在非常具体的情况下才会遇到的修复。', 'Another beta patch is here! There are a couple of card reworks, a handful of number adjustments, and a long list of fixes for very specific situations.'],
+  ['又到了 Beta 更新的时候，爬塔者们！这次有卡牌重做、一些平衡性调整，以及不少难以复现的漏洞修复。', 'Time for another beta patch, Slayers! We have a card rework, a round of balance changes, and fixes for a few tricky issues.'],
+  ['假期结束，我们回来了！团队已经重新投入开发。这次补丁以平衡性调整和漏洞修复为主，后续更大的内容还需要一点时间。', 'We’re back from our break! The team is hard at work again. This patch focuses on balance and bug fixes; the bigger things we’ve been working on need a little more time.'],
+  ['又一个 Beta 补丁来了！本次有卡牌重做、一些数值调整，以及一长串只有在非常具体的情况下才会遇到的修复。', 'Another beta patch is here! There’s a card rework, a handful of number adjustments, and a long list of fixes for very specific situations.'],
   ['嘿，爬塔者们！我们还在尝试让更多构筑有机会发挥，所以这次既有小幅增强，也有几处需要再观察的改动。', 'Hey Slayers! We’re still experimenting with ways to give more builds room to shine, so this patch includes some small buffs and a few changes we’ll be watching closely.'],
-  ['这次的公告比上次稍短一些，不过还是有不少值得测试的变化。尤其欢迎大家告诉我们，哪些改动在实战里和纸面上感觉不同。', 'These notes are a little shorter than last time, but there’s still plenty to test. We’re especially interested in changes that feel different in a run than they do on paper.'],
+  ['这次的更新说明比上次短一些，但还是有不少值得测试的改动。如果哪项调整在实际对局中与预期不同，请务必告诉我们！', 'These notes are a little shorter than last time, but there’s still plenty to test. If a change feels different in an actual run than you expected, please let us know!'],
   ['新的 Beta 更新现已推出！这轮主要是根据近期反馈做一些细致调整，顺手处理了几处战斗顺序问题。', 'A new beta update is live! This pass makes a few targeted changes based on recent feedback and clears up some combat ordering issues along the way.'],
   ['爬塔者们，我们听到了你们对部分卡牌的反馈。今天的更新会给一些旧面孔新的用途，也会让少数表现过强的数值稍微收敛。', 'Slayers, we’ve heard your feedback on a few cards. Today’s update gives some familiar faces new jobs and brings a few overperforming numbers back down.'],
-  ['从假期回来后，我们一直在测试几项更大的内容。那些还需要一点时间；与此同时，这里有一份新的 Beta 更新供大家体验。', 'Since returning from our break, we’ve been testing some bigger pieces of content. Those need a bit more time; in the meantime, here’s a fresh beta patch to play with.'],
+  ['假期过后，我们一直在测试之前月报提到的几项大型内容。它们还需要更多时间，所以先送上一份新的 Beta 补丁！', 'Since returning from our break, we’ve been testing some of the bigger additions mentioned in the Neowsletter. Those need more time, so here’s a fresh beta patch in the meantime!'],
   ['是时候再来一次实验性平衡更新了。Beta 分支的东西总有可能再变，所以请继续用游戏内反馈工具告诉我们你的体验。', 'It’s time for another experimental balance pass. Things on the beta branch can always change again, so please keep telling us how these feel through the in-game feedback tool.'],
   ['这次我们把重点放在那些“几乎可用”的牌上。一两个数值有时足以改变它们在牌组里的位置，看看这轮会发生什么吧。', 'This time we’re focusing on cards that have felt almost there. A number or two can change where they fit into a deck, so let’s see what this pass does.'],
   ['大家好！本次 Beta 更新包括卡牌调整、界面上的几处便利改进，还有一些我们在复查近期报告时发现的修复。', 'Hi everyone! This beta update includes card adjustments, a few interface conveniences, and fixes we found while revisiting recent reports.'],
   ['塔里的工作仍在继续。本轮更新没有巨大的系统改动，但有不少小地方值得仔细看看。', 'Work on the Spire continues. There’s no huge systems change in this round, but quite a few smaller details are worth a closer look.'],
-  ['这次更新的核心是一批卡牌和体验调整。我们还在推进月报里提到的长期项目，感谢大家在等待期间继续测试 Beta 分支。', 'This update is built around a batch of card and experience changes. We’re still working on the longer-term projects mentioned in the Neowsletter, and we appreciate everyone testing the beta in the meantime.']
+  ['这次带来了一批卡牌平衡性调整，以及一些界面和体验改进。月报里提到的内容仍在制作中，感谢大家继续测试 Beta 分支！', 'This patch brings another batch of card balance changes, along with some interface and quality-of-life improvements. We’re still working on the things mentioned in the Neowsletter; thanks for continuing to test the beta!']
 ];
 const bridges = [
-  ['下面是完整的更新内容。', 'On to the full patch notes.'],
+  ['下面来看看本次更新的详细内容！', 'On with the rest of the patch notes!'],
   ['照例，欢迎继续向我们发送反馈。下面进入更新详情！', 'As always, please keep the feedback coming. On to the details!'],
-  ['我们会密切留意这些改动的表现。现在来看看具体内容。', 'We’ll be keeping an eye on how these changes play out. Here are the details.']
+  ['我们会继续关注这些改动的表现。现在进入更新详情！', 'We’ll keep an eye on how these changes play out. Now, on to the details!']
 ];
 const endings = [
   ['感谢大家继续测试 Beta 分支，我们会留意反馈！', 'Thanks for continuing to test the beta branch. We’ll be reading your feedback!'],
@@ -78,8 +79,8 @@ const labels = {
   DoomPower: ['灾厄', 'Doom'], Stars: ['辉星', 'Stars']
 };
 Object.assign(labels, {
-  Repeat: ['效果次数', 'repetitions'], Forge: ['铸造数值', 'Forge amount'],
-  OstyDamage: ['奥斯提伤害', 'Osty damage'], Summon: ['召唤生命值', 'Summon HP'],
+  Repeat: ['效果次数', 'repetitions'], Forge: ['铸造值', 'Forge'],
+  OstyDamage: ['奥斯提造成的伤害', 'Osty damage'], Summon: ['召唤生命值', 'Summon HP'],
   Shivs: ['小刀数量', 'Shivs'], BlockNextTurn: ['下回合格挡', 'next-turn Block'],
   MaxHp: ['最大生命值', 'Max HP'], PanacheDamage: ['伤害', 'damage'],
   BombDamage: ['伤害', 'damage'], BlockOnExhaust: ['格挡', 'Block']
@@ -106,7 +107,7 @@ const nerfThoughts = [
   ['我们想为其他选择留出一点空间，并会继续观察它的表现。', 'We want to leave a little room for other options, and we’ll keep watching how it performs.']
 ];
 const wordBanks = {
-  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去 2 点生命。获得 1(2) 点力量。', 'Lose 2 HP. Gain 1(2) Strength.'], ['造成 13(17) 点伤害。每有一张已消耗的牌，伤害增加 2 点。', 'Deal 13(17) damage. Deal 2 additional damage for each Exhausted card.'], ['获得 9(12) 点格挡。若本回合失去过生命，抽 1 张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
+  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去2点生命值。获得1(2)点力量。', 'Lose 2 HP. Gain 1(2) Strength.'], ['造成13(17)点伤害。本场战斗中每消耗过1张牌，额外造成2点伤害。', 'Deal 13(17) damage. Deal 2 additional damage for each card you have Exhausted this combat.'], ['获得9(12)点格挡。如果你在本回合失去过生命值，抽1张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
   Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影佯攻', 'Umbral Feint']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下个回合将 1 张小刀加入你的手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。丢弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
   Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']], effects: [['获得 2(3) 点辉星。你下一张攻击牌造成的伤害增加 4 点。', 'Gain 2(3) Stars. Your next Attack deals 4 additional damage.'], ['造成 10(14) 点伤害。若你拥有辉星，获得 5 点格挡。', 'Deal 10(14) damage. If you have Stars, gain 5 Block.'], ['获得 7(10) 点格挡。下个回合开始时获得 1 点辉星。', 'Gain 7(10) Block. At the start of your next turn, gain 1 Star.']] },
   Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['墓园圣歌', 'Grave Canticle']], effects: [['造成 8(11) 点伤害。奥斯提的最大生命值增加 3(4) 点。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['奥斯提失去 4 点生命值。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2(3) 张牌。若奥斯提存活，再获得 1 点能量。消耗。', 'Draw 2(3) cards. If Osty is alive, gain 1 Energy. Exhaust.']] },
@@ -124,18 +125,17 @@ const draftFrames = {
   Colorless: [{ type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }]
 };
 const ancientReferences = [
-  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', stat: ['金币', 'Gold'], base: 999, direction: -1, benefit: true },
-  { name: 'Regalite', zh: '君王矿石', stat: ['格挡', 'Block'], base: 4, benefit: true },
-  { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', stat: ['最大生命损失', 'Max HP loss'], base: 2, benefit: false },
-  { name: "Pael's Relax", zh: '佩尔的放松', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
+  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', type: 'relic', stat: ['金币', 'Gold'], base: 999, direction: -1, benefit: true },
+  { name: 'Regalite', zh: '君王矿石', type: 'relic', stat: ['格挡', 'Block'], base: 4, benefit: true },
+  { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', type: 'card', stat: ['最大生命值损失', 'Max HP loss'], base: 2, benefit: false },
+  { name: "Pael's Relax", zh: '佩尔的放松', type: 'card', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
 ];
 const generalChanges = [
-  ['进阶 6 的“通货膨胀”现在使商人移除卡牌的初始费用由 100 金币提高至 125 金币。', 'Ascension 6 Inflation now raises the initial merchant card removal cost from 100 to 125 Gold.'],
-  ['进阶 6 的“通货膨胀”现在使商人移除卡牌的费用每次增长 25 金币，而非 50 金币。', 'Ascension 6 Inflation now increases the merchant card removal cost by 25 Gold each time instead of 50.'],
-  ['地图上现在会略微增加休息处的出现机会。', 'Rest Sites now appear slightly more often on the map.'],
-  ['地图上现在会略微减少问号房间的出现机会。', 'Unknown rooms now appear slightly less often on the map.'],
-  ['商店中的遗物现在更少出现重复的稀有度组合。', 'Relics at the merchant now show repeated rarity combinations less often.'],
-  ['遭遇精英战斗后的卡牌奖励现在更有机会出现稀有卡牌。', 'Card rewards after Elite fights now have a slightly higher chance to contain Rare cards.']
+  ['进阶6“通货膨胀”下，商人移除卡牌的初始费用从100金币提升至125金币。', 'At Ascension 6, Inflation increases the initial merchant card removal cost from 100 to 125 Gold.'],
+  ['进阶6“通货膨胀”下，商人移除卡牌的费用每次增加25金币，而非50金币。', 'At Ascension 6, Inflation now increases the merchant card removal cost by 25 Gold each time instead of 50.'],
+  ['略微增加了地图上休息处的数量。', 'Slightly increased the number of Rest Sites on the map.'],
+  ['略微减少了地图上？房间的数量。', 'Slightly decreased the number of ? rooms on the map.'],
+  ['精英战斗后的卡牌奖励现在略微提高了稀有牌的出现概率。', 'Rare cards now appear slightly more often in card rewards after Elite combats.']
 ];
 const enemyChanges = [
   {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)'},
@@ -150,29 +150,33 @@ const enemyChanges = [
   {name:['灵魂异鱼','Soul Fysh'], move:['凝视','Gaze'], kind:'intent', text:['“凝视”现在会造成少量伤害，意图由负面效果改为攻击＋负面效果。','Gaze now deals a small amount of damage, changing its intent from Debuff to Attack + Debuff.']}
 ];
 const relicChanges = [
-  ['加强了小邮箱：休息时获得的随机药水数量从2瓶提升至3瓶。', 'Buffed Tiny Mailbox: random potions gained when Resting increased from 2 → 3.'],
-  ['改动了弹珠袋：稀有度从普通改为罕见。', 'Changed Bag of Marbles: rarity moved from Common → Uncommon.'],
-  ['改动了摆动球：额外回合现在也计入抽牌的回合计数。', 'Changed Pendulum: extra turns now count toward its card draw timer.'],
-  ['加强了永冻冰晶：在战斗中首次打出能力牌时获得的格挡略微增加。', 'Buffed Permafrost: slightly increased the Block gained from the first Power played in combat.']
+  ['加强了小邮箱：休息时获得的随机药水数量从2瓶提升至3瓶。', 'Buffed Tiny Mailbox relic: random potions gained when Resting increased from 2 → 3.'],
+  ['修改了弹珠袋：稀有度由普通改为罕见。', 'Changed Bag of Marbles relic: rarity changed from Common → Uncommon.'],
+  ['修改了摆动球：额外回合现在也会计入抽牌的回合计数。', 'Changed Pendulum relic: extra turns now count toward its card draw timer.'],
+  ['加强了永冻冰晶：在战斗中首次打出能力牌时获得的格挡略微增加。', 'Buffed Permafrost relic: slightly increased the Block gained from the first Power played in combat.']
 ];
 const eventChanges = [
-  ['加强了蘑菇饥渴事件：“芳香蘑菇”选项升级的卡牌数量从2张提升至3张。', 'Buffed Hungry for Mushrooms: the Fragrant Mushroom option now upgrades 3 cards instead of 2.'],
-  ['改动了欢迎来到旺购百货事件：“旺购的神秘盲盒”现在也会在精英战斗后推进计数。', "Changed Welcome to Wongo's: the Mystery Box now also progresses after Elite fights."],
-  ['改动了打造时间事件：“混沌”选项生成的牌现在会更明确地标明本回合可以免费打出。', 'Changed Tinker Time: cards created by the Chaos option now more clearly indicate that they are free to play this turn.']
+  ['加强了蘑菇饥渴事件：“芳香蘑菇”选项升级的卡牌数量从2张提升至3张。', 'Buffed Hungry for Mushrooms event: the Fragrant Mushroom option now upgrades 3 cards instead of 2.'],
+  ['修改了欢迎来到旺购百货事件：“旺购的神秘盲盒”现在也会在精英战斗后推进计数。', "Changed Welcome to Wongo's event: the Mystery Box now also progresses after Elite combats."],
+  ['修改了打造时间事件：“混沌”选项生成的牌现在会更明确地标明本回合可以免费打出。', 'Changed Tinker Time event: cards created by the Chaos option now more clearly indicate that they are free to play this turn.']
 ];
 const writingLines = [
   ['统一了部分临时免费打出效果的描述，以便与“本回合耗能变为0”区分。', 'Clarified several temporary free-to-play descriptions to distinguish them from setting a card’s cost to 0 for the turn.'],
   ['调整了部分升级后卡牌描述中的换行位置。', 'Adjusted line breaks in some upgraded card descriptions.'],
-  ['修正了部分敌人意图说明中的中文标点。', 'Corrected Chinese punctuation in a few enemy intent descriptions.'],
   ['更新了部分遗物的悬停说明，使触发时机更明确。', 'Updated a few relic tooltips to clarify when their effects trigger.']
+];
+const localizationLines = [
+  ['修正了部分敌人意图说明中的中文标点。', 'Corrected Chinese punctuation in a few enemy intent descriptions.'],
+  ['更新了多种语言的翻译文本。', 'Updated translations in several languages.'],
+  ['修复了少数卡牌预览中未翻译的关键词。', 'Fixed a few untranslated keywords in card previews.']
 ];
 const bugs = [
   [['修复了在多人游戏中，一名玩家打出来自另一名角色的牌，同时队友结束回合时，某些效果偶尔会结算两次的问题。', 'Fixed some effects occasionally resolving twice in multiplayer when a player used another character’s card as a teammate ended their turn.']],
-  [['修复了特定条件下，战斗结束时仍在等待结算的效果可能影响下一场战斗的问题。', 'Fixed pending effects at the end of combat occasionally carrying into the next combat under specific conditions.']],
-  [['修复了使用控制器快速切换奖励选项时，描述文字有时会显示上一项内容的问题。', 'Fixed reward descriptions occasionally showing the previous choice when switching quickly with a controller.']],
+  [['战斗结束时尚未结算的效果现在不会在特定条件下影响下一场战斗。', 'Effects still pending when combat ends no longer carry into the next combat under certain conditions.']],
+  [['使用手柄快速切换奖励选项时，描述文字现在会正确更新。', 'Reward descriptions now update correctly when switching quickly between choices on controller.']],
   [['修复了在同一回合中连续生成并消耗一张牌时，战斗记录可能显示错误顺序的问题。', 'Fixed the combat log sometimes showing the wrong order when a card was created and Exhausted in the same turn.']],
-  [['修复了当临时费用变化与升级同时发生时，卡牌预览偶尔不更新的问题。', 'Fixed card previews occasionally failing to refresh when temporary cost changes and upgrades happened together.']],
-  [['修复了队友断线重连后，在极少数情况下地图投票状态不同步的问题。', 'Fixed map vote state rarely becoming out of sync after a teammate reconnected.']],
+  [['临时耗能变化与升级同时发生时，卡牌预览现在会正确刷新。', 'Card previews now refresh correctly when temporary cost changes and upgrades happen together.']],
+  [['队友断线重连后，地图投票状态不再偶尔失去同步。', 'Map vote state no longer occasionally desynchronizes after a teammate reconnects.']],
   [['修复了特定敌人的多段攻击在目标于攻击中途死亡时仍显示额外命中数字的问题。', 'Fixed an extra hit number appearing when the target of a certain multi-hit enemy attack died partway through the move.']],
   [['修复了查看另一名玩家的牌组时，部分关键词说明可能沿用上一张牌的问题。', 'Fixed some keyword tooltips using text from the previous card when viewing another player’s deck.']],
   [['修复了在暂停菜单打开的瞬间切换窗口焦点时，少数输入提示可能消失的问题。', 'Fixed some input prompts disappearing when window focus changed as the pause menu opened.']],
@@ -180,6 +184,8 @@ const bugs = [
   [['修复了部分遗物效果在以非通常方式获得临时能量后，数字预览延迟更新的问题。', 'Fixed some relic number previews updating late after temporary Energy was gained in an unusual way.']],
   [['修复了在超宽屏下，某些确认弹窗的焦点会落到不可见按钮上的问题。', 'Fixed focus landing on an invisible button in some confirmation dialogs at ultrawide resolutions.']]
 ];
+const bugCategories = ['multiplayer', 'general', 'general', 'general', 'general', 'multiplayer',
+  'enemies', 'multiplayer', 'general', 'general', 'general', 'general'];
 const uxLines = [
   ['调整了长卡牌描述在较窄窗口中的换行方式。', 'Adjusted wrapping for long card descriptions in narrow windows.'],
   ['在查看队友牌组时，当前选中的卡牌现在会更清楚地突出显示。', 'The selected card is now highlighted more clearly when viewing a teammate’s deck.'],
@@ -276,7 +282,7 @@ function changeKeyword(card) {
   const choice = pick(options);
   const upgradedOnly = choice.scope === 'upgraded';
   const text = choice.exhaust
-    ? (upgradedOnly ? ['升级后改为消耗。', 'The upgraded version now Exhausts.'] : ['现在拥有消耗词条。', 'Now Exhausts.'])
+    ? (upgradedOnly ? ['升级后也会消耗。', 'The upgraded version now also Exhausts.'] : ['现在会消耗。', 'Now Exhausts.'])
     : (upgradedOnly ? ['升级后不再消耗。', 'The upgrade now removes Exhaust.'] : ['不再消耗。', 'No longer Exhausts.']);
   const thought = choice.exhaust
     ? (upgradedOnly ? ['升级仍保留更高的数值，这次仅收回移除消耗的额外收益。', 'The upgrade keeps its higher numbers; this only removes the additional benefit of losing Exhaust.'] :
@@ -414,6 +420,9 @@ function organizeEntries(entries) {
 function changeDirection(oldValue, nextValue) {
   return Number.parseInt(nextValue, 10) > Number.parseInt(oldValue, 10) ? '提升至' : '降低至';
 }
+function englishDirection(oldValue, nextValue) {
+  return Number.parseInt(nextValue, 10) > Number.parseInt(oldValue, 10) ? 'increased' : 'decreased';
+}
 function generatePatch() {
   const entries = {};
   const used = new Set();
@@ -463,7 +472,9 @@ function generatePatch() {
     relics: Math.random() < .56 ? shuffle(relicChanges).slice(0, rand(1, 2)) : [],
     events: Math.random() < .46 ? shuffle(eventChanges).slice(0, 1) : [],
     writing: Math.random() < .62 ? shuffle(writingLines).slice(0, rand(1, 2)) : [],
-    ux: shuffle(uxLines).slice(0, rand(3, 5)), bugs: shuffle(bugs).slice(0, rand(6, 9)),
+    localization: Math.random() < .48 ? shuffle(localizationLines).slice(0, rand(1, 2)) : [],
+    ux: shuffle(uxLines).slice(0, rand(3, 5)),
+    bugs: shuffle(bugs.map((item, index) => ({text:item[0], category:bugCategories[index]}))).slice(0, rand(6, 9)),
     modding: shuffle(modLines).slice(0, rand(2, 4)), likes: rand(420, 2700), comments: rand(55, 430) };
   liked = false;
   disliked = false;
@@ -490,7 +501,7 @@ function lineFor(entry) {
   }
   const name = escapeHtml(language === 'zh' ? entry.card.zh : entry.card.en);
   if (entry.kind === 'remove')
-    return '<li>' + (language === 'zh' ? '移除卡牌<strong>' : 'Removed <strong>') + name + (language === 'zh' ? '</strong>。</li>' : '</strong>.</li>') + thoughtFor(entry);
+    return '<li>' + (language === 'zh' ? '移除了<strong>' : 'Removed <strong>') + name + (language === 'zh' ? '</strong>。</li>' : '</strong> card.</li>') + thoughtFor(entry);
   if (entry.kind === 'rework') {
     const plainName = language === 'zh' ? entry.card.zh : entry.card.en;
     return '<li>' + (language === 'zh' ? '重做了<strong>' : 'Reworked <strong>') + name +
@@ -499,46 +510,47 @@ function lineFor(entry) {
       '</li><li>' + (language === 'zh' ? '新：' : 'New: ') + cardDetail(plainName, entry.newFrame, entry.next) +
       '</li></ul></li>' + thoughtFor(entry);
   }
-  if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整<strong>' : 'Changed <strong>') +
-    name + (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
-  if (entry.kind === 'rarity') return '<li>' + (language === 'zh' ? '改动了<strong>' : 'Changed <strong>') +
-    name + (language === 'zh' ? '</strong>：稀有度从' : '</strong>: rarity moved from ') +
+  if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '修改了<strong>' : 'Changed <strong>') +
+    name + (language === 'zh' ? '</strong>：' : '</strong> card: ') + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
+  if (entry.kind === 'rarity') return '<li>' + (language === 'zh' ? '修改了<strong>' : 'Changed <strong>') +
+    name + (language === 'zh' ? '</strong>：稀有度由' : '</strong> card: rarity changed from ') +
     escapeHtml(tr(entry.old)) + (language === 'zh' ? '改为' : ' → ') +
     escapeHtml(tr(entry.next)) + (language === 'zh' ? '。</li>' : '.</li>') + thoughtFor(entry);
   if (entry.kind === 'cost') {
     const verb = language === 'zh' ? (entry.benefit ? '加强了' : '削弱了') : (entry.benefit ? 'Buffed' : 'Nerfed');
     return '<li>' + verb + (language === 'zh' ? '<strong>' : ' <strong>') + name +
-      (language === 'zh' ? '</strong>：费用从' : '</strong>: cost changed from ') + entry.old +
+      (language === 'zh' ? '</strong>：耗能从' : '</strong> card: cost ' + englishDirection(entry.old, entry.next) + ' from ') + entry.old +
       (language === 'zh' ? changeDirection(entry.old, entry.next) : ' → ') + entry.next + '</li>' + thoughtFor(entry);
   }
   if (['upgrade','upgradeCost','baseOnly'].includes(entry.kind)) {
-    const label = entry.kind === 'upgradeCost' ? ['费用','cost'] : entry.label;
+    const label = entry.kind === 'upgradeCost' ? ['耗能','cost'] : entry.label;
     if (language === 'zh') {
-      const subject = (entry.kind === 'baseOnly' ? '基础' : '升级后的') + tr(label);
+      const subject = entry.kind === 'baseOnly' ? '未升级时的' + tr(label) :
+        entry.kind === 'upgradeCost' ? '升级后' + tr(label) : '升级后的' + tr(label);
       return '<li>加强了<strong>' + name + '</strong>：' + escapeHtml(subject) + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next + '</li>' + thoughtFor(entry);
     }
     const prefix = entry.kind === 'baseOnly' ? 'unupgraded' : 'upgraded';
-    return '<li>Buffed <strong>' + name + '</strong>: ' + prefix + ' ' + escapeHtml(tr(label)) +
-      ' changed from ' + entry.old + ' → ' + entry.next + '</li>' + thoughtFor(entry);
+    return '<li>Buffed <strong>' + name + '</strong> card: ' + prefix + ' ' + escapeHtml(tr(label)) +
+      ' ' + englishDirection(entry.old, entry.next) + ' from ' + entry.old + ' → ' + entry.next + '</li>' + thoughtFor(entry);
   }
   const label = escapeHtml(tr(entry.label));
   const verb = language === 'zh' ? (entry.benefit ? '加强了' : '削弱了') : (entry.benefit ? 'Buffed' : 'Nerfed');
   const change = language === 'zh' ? label + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next :
-    label + ' changed from ' + entry.old + ' → ' + entry.next;
+    label + ' ' + englishDirection(entry.old, entry.next) + ' from ' + entry.old + ' → ' + entry.next;
   return '<li>' + verb + (language === 'zh' ? '<strong>' : ' <strong>') + name +
-    (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(change) + '</li>' + thoughtFor(entry);
+    (language === 'zh' ? '</strong>：' : '</strong> card: ') + escapeHtml(change) + '</li>' + thoughtFor(entry);
 }
 function thoughtFor(entry) { return entry.thought ? '<li class="thought">' + escapeHtml(tr(entry.thought)) + '</li>' : ''; }
 function list(lines) { return '<ul>' + lines.map(line => '<li>' + escapeHtml(tr(line)) + '</li>').join('') + '</ul>'; }
 function enemyLine(item) {
   const name = escapeHtml(tr(item.name));
-  if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '调整了<strong>' : 'Changed <strong>') + name +
+  if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '修改了<strong>' : 'Changed <strong>') + name +
     (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(item.text)) + '</li>';
   const stat = item.kind === 'hp' ? ['生命值', 'HP'] : item.kind === 'strength' ? ['力量增益', 'Strength gain'] :
     item.kind === 'galvanic' ? ['电流增益', 'Galvanic power'] : ['伤害', 'damage'];
-  const move = item.move ? escapeHtml(tr(item.move)) + (language === 'zh' ? '的' : ' move ') : '';
+  const move = item.move ? escapeHtml(tr(item.move)) + (language === 'zh' ? '动作的' : ' move ') : '';
   if (language === 'zh') return '<li>加强了<strong>' + name + '</strong>：' +
-    (item.ascension ? '进阶' + item.ascension + '时' : '') + move + escapeHtml(tr(stat)) +
+    move + escapeHtml(tr(stat)) + (item.ascension ? '在进阶' + item.ascension + '时' : '') +
     '从' + item.old + '提升至' + item.next + '</li>';
   return '<li>Buffed <strong>' + name + '</strong>: ' + move + escapeHtml(tr(stat)) +
     (item.ascension ? ' at A' + item.ascension : '') + ' increased from ' + item.old + ' → ' + item.next + '</li>';
@@ -565,8 +577,8 @@ function render() {
   html += '<h3>' + (language === 'zh' ? '先古之民：' : 'Ancients:') + '</h3><ul>';
   html += patch.ancients.map(item => '<li>' + (language === 'zh' ? (item.buff ? '加强了' : '削弱了') :
     (item.buff ? 'Buffed ' : 'Nerfed ')) + '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) +
-    (language === 'zh' ? '</strong>：' : '</strong>: ') +
-    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从' : ' changed from ') + item.old +
+    (language === 'zh' ? '</strong>：' : '</strong> ' + item.type + ': ') +
+    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从' : ' ' + englishDirection(item.old, item.next) + ' from ') + item.old +
     (language === 'zh' ? changeDirection(item.old, item.next) : ' → ') + item.next + '</li>').join('');
   html += '</ul>';
   html += '<h3>' + tr(ui.enemies) + (language === 'zh' ? '：' : ':') + '</h3><ul>' + patch.enemies.map(enemyLine).join('') + '</ul>';
@@ -578,8 +590,13 @@ function render() {
   if (patch.relics.length) html += '<h3>' + tr(ui.relics) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.relics);
   if (patch.events.length) html += '<h3>' + tr(ui.events) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.events);
   if (patch.writing.length) html += '<h2>' + tr(ui.writing) + '</h2>' + list(patch.writing);
+  if (patch.localization.length) html += '<h2>' + tr(ui.localization) + '</h2>' + list(patch.localization);
   html += '<h2>' + tr(ui.ux) + '</h2><h3>' + tr(ui.general) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.ux);
-  html += '<h2>' + tr(ui.bugs) + '</h2>' + list(patch.bugs.map(x => x[0]));
+  html += '<h2>' + tr(ui.bugs) + '</h2>';
+  for (const [category, heading] of [['general', ui.general], ['enemies', ui.enemies], ['multiplayer', ui.multiplayer]]) {
+    const lines = patch.bugs.filter(item => item.category === category).map(item => item.text);
+    if (lines.length) html += '<h3>' + tr(heading) + (language === 'zh' ? '：' : ':') + '</h3>' + list(lines);
+  }
   html += '<h2>' + tr(ui.modding) + '</h2>' + list(patch.modding);
   html += '<p class="closing">' + escapeHtml(tr(patch.ending)) + '</p>';
   html += '<p class="fiction-note">' + escapeHtml(tr(ui.sideNote)) + '</p>';
