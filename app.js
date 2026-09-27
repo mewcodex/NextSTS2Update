@@ -340,7 +340,6 @@ function generatePatch() {
   render();
   $('landing').classList.add('hidden');
   $('article-shell').classList.remove('hidden');
-  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 function lineFor(entry) {
   if (entry.kind === 'new') {
@@ -436,8 +435,23 @@ function safeGenerate() {
   try { generatePatch(); }
   catch (error) { console.error('Patch generation failed:', error); $('generate-main').textContent = 'Generation error'; }
 }
+let regenerating = false;
+function smoothRegenerate() {
+  if (regenerating) return;
+  regenerating = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const finishAtTop = () => {
+    if (window.scrollY > 1) {
+      requestAnimationFrame(finishAtTop);
+      return;
+    }
+    safeGenerate();
+    regenerating = false;
+  };
+  requestAnimationFrame(finishAtTop);
+}
 $('generate-main').addEventListener('click', safeGenerate);
-$('generate-again').addEventListener('click', safeGenerate);
+$('generate-again').addEventListener('click', smoothRegenerate);
 $('like-button').addEventListener('click', () => { liked = !liked; if (liked) disliked = false; render(); });
 $('dislike-button').addEventListener('click', () => { disliked = !disliked; if (disliked) liked = false; render(); });
 $('comment-button').addEventListener('click', () => {

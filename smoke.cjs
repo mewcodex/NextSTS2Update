@@ -5,6 +5,8 @@ const assert = require('assert');
 const cards = JSON.parse(fs.readFileSync('cards.json', 'utf8'));
 assert.strictEqual(cards.length, 567, 'Native card catalog must be complete');
 const elements = new Map();
+const frames = [];
+const fakeWindow = { scrollY: 0, scrollTo(options) { this.lastScroll = options; } };
 function element(id) {
   if (!elements.has(id)) elements.set(id, {
     id, innerHTML: '', textContent: '', disabled: false,
@@ -15,7 +17,7 @@ function element(id) {
 }
 const context = vm.createContext({
   document: { getElementById: element, documentElement: {}, title: '' },
-  window: { scrollTo() {} }, console,
+  window: fakeWindow, requestAnimationFrame: callback => frames.push(callback), console,
   fetch: async () => ({ ok: true, json: async () => cards })
 });
 vm.runInContext(fs.readFileSync('app.js', 'utf8'), context);
@@ -47,5 +49,14 @@ setImmediate(() => {
   for (const kind of ['number','keyword','upgrade','baseOnly','rework']) assert(kinds.has(kind), `Missing ${kind} changes`);
   assert(newCount < 65, 'New cards are too common');
   assert(generalCount > 90, 'General changes are too rare');
+  const before = vm.runInContext('patch', context);
+  fakeWindow.scrollY = 300;
+  vm.runInContext('smoothRegenerate()', context);
+  assert.strictEqual(fakeWindow.lastScroll.behavior, 'smooth');
+  frames.shift()();
+  assert.strictEqual(vm.runInContext('patch', context), before, 'Article changed before scrolling finished');
+  fakeWindow.scrollY = 0;
+  frames.shift()();
+  assert.notStrictEqual(vm.runInContext('patch', context), before, 'Article did not regenerate at the top');
   console.log(`150 bilingual generations passed; ${samples.size} unique posts; ${newCount} new cards; ${generalCount} general sections.`);
 });
