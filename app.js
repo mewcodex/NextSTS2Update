@@ -68,14 +68,14 @@ const labels = {
   PoisonPower: ['中毒', 'Poison'], VulnerablePower: ['易伤', 'Vulnerable'],
   WeakPower: ['虚弱', 'Weak'], StrengthPower: ['力量', 'Strength'],
   DexterityPower: ['敏捷', 'Dexterity'], FocusPower: ['集中', 'Focus'],
-  VigorPower: ['活力', 'Vigor'], PlatingPower: ['镀层', 'Plating'],
-  DoomPower: ['末日', 'Doom'], Stars: ['星星', 'Stars']
+  VigorPower: ['活力', 'Vigor'], PlatingPower: ['覆甲', 'Plating'],
+  DoomPower: ['灾厄', 'Doom'], Stars: ['辉星', 'Stars']
 };
 Object.assign(labels, {
-  Repeat: ['攻击次数', 'hits'], Forge: ['锻造次数', 'Forge amount'],
-  OstyDamage: ['奥斯蒂伤害', 'Osty damage'], Summon: ['召唤数量', 'summons'],
+  Repeat: ['效果次数', 'repetitions'], Forge: ['铸造数值', 'Forge amount'],
+  OstyDamage: ['奥斯提伤害', 'Osty damage'], Summon: ['召唤生命值', 'Summon HP'],
   Shivs: ['小刀数量', 'Shivs'], BlockNextTurn: ['下回合格挡', 'next-turn Block'],
-  MaxHp: ['最大生命', 'Max HP'], PanacheDamage: ['伤害', 'damage'],
+  MaxHp: ['最大生命值', 'Max HP'], PanacheDamage: ['伤害', 'damage'],
   BombDamage: ['伤害', 'damage'], BlockOnExhaust: ['格挡', 'Block']
 });
 const thoughts = {
@@ -101,10 +101,10 @@ const nerfThoughts = [
 ];
 const wordBanks = {
   Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去 2 点生命。获得 1 点力量。', 'Lose 2 HP. Gain 1 Strength.'], ['造成 13(17) 点伤害。每有一张已消耗的牌，伤害增加 2 点。', 'Deal 13(17) damage. Deal 2 additional damage for each Exhausted card.'], ['获得 9(12) 点格挡。若本回合失去过生命，抽 1 张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
-  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影换位', 'Shadow Step']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下回合将一张小刀加入手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
-  Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']], effects: [['获得 2(3) 颗星星。你下一张攻击牌造成的伤害增加 4 点。', 'Gain 2(3) Stars. Your next Attack deals 4 additional damage.'], ['造成 10(14) 点伤害。若你拥有星星，获得 5 点格挡。', 'Deal 10(14) damage. If you have Stars, gain 5 Block.'], ['获得 7(10) 点格挡。下回合开始时获得 1 颗星星。', 'Gain 7(10) Block. At the start of your next turn, gain 1 Star.']] },
-  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['葬歌', 'Dirge']], effects: [['造成 8(11) 点伤害。奥斯蒂获得 3(4) 点最大生命。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['牺牲奥斯蒂 4 点生命。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2 张牌。若奥斯蒂在场，再获得 1 点能量。消耗。', 'Draw 2 cards. If Osty is present, gain 1 Energy. Exhaust.']] },
-  Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']], effects: [['造成 9(12) 点伤害。引导 1 个闪电充能球。', 'Deal 9(12) damage. Channel 1 Lightning Orb.'], ['获得 8(11) 点格挡。若你本回合激发过充能球，抽 1 张牌。', 'Gain 8(11) Block. If you Evoked an Orb this turn, draw 1 card.'], ['获得 1(2) 点集中。下回合开始时失去 1 点集中。', 'Gain 1(2) Focus. At the start of your next turn, lose 1 Focus.']] },
+  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影换位', 'Shadow Step']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下个回合将 1 张小刀加入你的手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。丢弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
+  Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']], effects: [['获得 2(3) 点辉星。你下一张攻击牌造成的伤害增加 4 点。', 'Gain 2(3) Stars. Your next Attack deals 4 additional damage.'], ['造成 10(14) 点伤害。若你拥有辉星，获得 5 点格挡。', 'Deal 10(14) damage. If you have Stars, gain 5 Block.'], ['获得 7(10) 点格挡。下个回合开始时获得 1 点辉星。', 'Gain 7(10) Block. At the start of your next turn, gain 1 Star.']] },
+  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['葬歌', 'Dirge']], effects: [['造成 8(11) 点伤害。奥斯提的最大生命值增加 3(4) 点。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['奥斯提失去 4 点生命值。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2 张牌。若奥斯提存活，再获得 1 点能量。消耗。', 'Draw 2 cards. If Osty is alive, gain 1 Energy. Exhaust.']] },
+  Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']], effects: [['造成 9(12) 点伤害。生成 1 个闪电充能球。', 'Deal 9(12) damage. Channel 1 Lightning Orb.'], ['获得 8(11) 点格挡。若你本回合激发过充能球，抽 1 张牌。', 'Gain 8(11) Block. If you Evoked an Orb this turn, draw 1 card.'], ['获得 1(2) 点集中。下个回合开始时失去 1 点集中。', 'Gain 1(2) Focus. At the start of your next turn, lose 1 Focus.']] },
   Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3 张随机无色牌中选择 1 张加入手牌。本回合它的耗能为 0。消耗。', 'Choose 1 of 3 random Colorless cards to add to your hand. It costs 0 this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
 };
 const ancientReferences = [
@@ -180,23 +180,41 @@ function candidateVars(card) {
     !(v.id === 'Cards' && /(?:大于等于|at least)\s*\{Cards:/i.test(card.descZh + card.descEn)));
 }
 function variableLabel(card, variable) {
+  const description = card.descZh.replace(/\[\/?[a-zA-Z]+\]/g, '');
   if (variable.id === 'Cards') {
-    if (/(?:抽|Draw)\s*\{Cards:/i.test(card.descZh + card.descEn)) return ['抽牌数', 'cards drawn'];
-    if (/(?:丢弃|Discard)\s*\{Cards:/i.test(card.descZh + card.descEn)) return ['弃牌数', 'cards discarded'];
+    if (/抽\s*\{Cards:/.test(description)) return ['抽牌数', 'cards drawn'];
+    if (/丢弃\s*\{Cards:/.test(description)) return ['弃牌数', 'cards discarded'];
+    if (/\{Cards:[^}]+\}张小刀/.test(description)) return ['小刀数量', 'Shivs'];
+    if (/\{Cards:[^}]+\}张灵魂/.test(description)) return ['灵魂数量', 'Souls'];
+  }
+  if (variable.id === 'Repeat') {
+    if (/\{Repeat:[^}]+\}个充能球栏位/.test(description)) return ['充能球栏位数', 'Orb slots'];
+    if (/生成\s*\{Repeat:/.test(description)) return ['生成的充能球数量', 'Orbs channeled'];
+    if (/激发[^。\n]*\{Repeat:/.test(description)) return ['激发次数', 'Evokes'];
+    if (/中毒\s*\{Repeat:/.test(description)) return ['中毒施加次数', 'Poison applications'];
+    if (/格挡\s*\{Repeat:/.test(description)) return ['格挡次数', 'Block gains'];
+    if (/伤害\s*\{Repeat:/.test(description) || /攻击\s*\{Repeat:/.test(description)) return ['攻击次数', 'hits'];
   }
   return labels[variable.id] || labels[variable.kind];
+}
+function beneficialDirection(card, variable) {
+  const marker = '{' + variable.id + ':';
+  const before = card.descZh.split(marker)[0].replace(/\[\/?[a-zA-Z]+\]/g, '').split(/[。！\n]/).pop();
+  if (variable.kind === 'HpLoss' || /(?:失去|消耗|花费|耗能为)\s*$/.test(before)) return -1;
+  return 1;
 }
 function changeCard(card) {
   const vars = candidateVars(card);
   if (!vars.length) return null;
   const variable = pick(vars);
-  const direction = variable.kind === 'HpLoss' ? pick([-1, -1, 1]) : pick([1, 1, -1]);
+  const polarity = beneficialDirection(card, variable);
+  const direction = pick([polarity, polarity, -polarity]);
   const nextBase = numericStep(variable.base, direction, variable.kind);
   if (nextBase === variable.base) return null;
   const delta = nextBase - variable.base;
   const nextUp = Math.max(1, variable.up + delta);
   const label = variableLabel(card, variable) || [variable.id.replace(/([a-z])([A-Z])/g, '$1 $2'), variable.id.replace(/([a-z])([A-Z])/g, '$1 $2')];
-  const benefit = variable.kind === 'HpLoss' ? direction < 0 : direction > 0;
+  const benefit = direction === polarity;
   return { kind: 'number', card, variable, label, old: valuePair(variable.base, variable.up),
     next: valuePair(nextBase, nextUp), benefit, thought: Math.random() < .23 ?
       pick(benefit ? (thoughts[variable.kind] || thoughts.default) : nerfThoughts) : null };
@@ -219,7 +237,7 @@ function changeUpgrade(card) {
   const vars = candidateVars(card);
   if (vars.length && Math.random() < .7) {
     const variable = pick(vars);
-    const direction = variable.kind === 'HpLoss' ? -1 : 1;
+    const direction = beneficialDirection(card, variable);
     const next = numericStep(variable.up, direction, variable.kind);
     if (next !== variable.up) {
       const label = variableLabel(card, variable);
@@ -239,7 +257,7 @@ function changeBaseOnly(card) {
   const vars = candidateVars(card);
   if (!vars.length) return null;
   const variable = pick(vars);
-  const next = numericStep(variable.base, variable.kind === 'HpLoss' ? -1 : 1, variable.kind);
+  const next = numericStep(variable.base, beneficialDirection(card, variable), variable.kind);
   if (next === variable.base) return null;
   return {kind:'baseOnly', card, label: variableLabel(card, variable),
     old:String(variable.base), next:String(next),
@@ -255,13 +273,24 @@ function changeDiverse(card) {
 }
 function cleanDescription(template, card, lang) {
   const variables = Object.fromEntries(card.vars.map(v => [v.id, v]));
-  return template.replace(/\[\/?[a-zA-Z]+\]/g, '').replace(/\{([^{}:]+):([^{}]+)\}/g, (_, id, modifier) => {
+  return template.replace(/\{Stars:diff\(\)\}\{singleStarIcon\}/g, '{Stars:starIcons()}')
+    .replace(/\[\/?[a-zA-Z]+\]/g, '').replace(/\{([^{}:]+):([^{}]+)\}/g, (_, id, modifier) => {
     const v = variables[id];
     if (!v) return '';
     if (modifier.startsWith('plural:')) return v.base === 1 ? modifier.slice(7).split('|')[0] : modifier.slice(7).split('|')[1] || '';
+    if (modifier.startsWith('energyIcons')) return valuePair(v.base, v.up) + (lang === 'zh' ? '点能量' : ' Energy');
+    if (modifier.startsWith('starIcons')) return valuePair(v.base, v.up) + (lang === 'zh' ? '点辉星' : ' Stars');
     return valuePair(v.base, v.up);
-  }).replace(/\{singleStarIcon\}/g, lang === 'zh' ? ' 颗星星' : ' Stars')
+  }).replace(/\{singleStarIcon\}/g, lang === 'zh' ? '1点辉星' : '1 Star')
     .replace(/\s+/g, ' ').trim();
+}
+function canShowOriginalDescription(card) {
+  const supported = /\{[A-Za-z][A-Za-z0-9_]*:(?:diff\(\)|energyIcons\(\)|starIcons\(\))\}|\{singleStarIcon\}/g;
+  const knownVariables = new Set(card.vars.map(variable => variable.id));
+  return [card.descZh, card.descEn].every(template =>
+    !/[{}]/.test(template.replace(supported, '')) &&
+    [...template.matchAll(/\{([A-Za-z][A-Za-z0-9_]*):(diff\(\)|energyIcons\(\)|starIcons\(\))\}/g)]
+      .every(match => knownVariables.has(match[1])));
 }
 function makeRework(card) {
   const bank = wordBanks[card.pool];
@@ -306,8 +335,7 @@ function generatePatch() {
   const reworkPool = pick(pools.slice(0, 5));
   const reworkCard = pick(catalog.filter(c => c.pool === reworkPool && !used.has(c.en) &&
     c.rarity !== 'Basic' && ['Attack', 'Skill'].includes(c.type) && c.descEn.length < 190 &&
-    !/[{}]/.test(cleanDescription(c.descEn, c, 'en')) &&
-    !/[{}]/.test(cleanDescription(c.descZh, c, 'zh'))));
+    canShowOriginalDescription(c)));
   if (reworkCard) { entries[reworkPool].splice(rand(0, entries[reworkPool].length), 0, makeRework(reworkCard)); used.add(reworkCard.en); }
   if (Math.random() < .18) {
     const newPool = pick(pools);

@@ -5,9 +5,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SOURCE = ROOT.parent / "chaos/ChaosCardGenerator/Data/native_reference_cards.json"
 DEST = ROOT / "cards.json"
+GAME_ZH = ROOT.parent / "export/111/localization/zhs/cards.json"
 POOLS = {"Ironclad", "Silent", "Defect", "Regent", "Necrobinder", "Colorless"}
 
 source = json.loads(SOURCE.read_text(encoding="utf-8"))
+if GAME_ZH.exists():
+    localized = json.loads(GAME_ZH.read_text(encoding="utf-8"))
+    for card in source["Cards"]:
+        native_id = card["NativeId"]
+        if localized.get(native_id + ".title") != card["Title"]["zhHans"]:
+            raise ValueError(f"Chinese title differs from game localization: {native_id}")
+        if localized.get(native_id + ".description", "") != card["DescriptionTemplate"]["zhHans"]:
+            raise ValueError(f"Chinese description differs from game localization: {native_id}")
 cards = []
 for card in source["Cards"]:
     base = card["Base"]
