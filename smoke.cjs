@@ -44,6 +44,7 @@ setImmediate(() => {
   }
   assert.strictEqual(vm.runInContext("cleanDescription('{Stars:diff()}{singleStarIcon}', {vars:[{id:'Stars',base:2,up:3}]}, 'zh')", context), '2(3)点辉星');
   const banks = vm.runInContext('wordBanks', context);
+  const draftFrames = vm.runInContext('draftFrames', context);
   for (const bank of Object.values(banks)) {
     for (const name of bank.names) {
       assert(!cards.some(card => card.en.toLowerCase() === name[1].toLowerCase() || card.zh === name[0]), `New card name already exists: ${name[1]}`);
@@ -51,6 +52,12 @@ setImmediate(() => {
     for (const effect of bank.effects) {
       const upgrade = effect[0].match(/(\d+)\((\d+)\)/);
       assert(upgrade && Number(upgrade[2]) > Number(upgrade[1]), `New card has no stronger upgraded effect: ${effect[1]}`);
+    }
+  }
+  for (const [pool, bank] of Object.entries(banks)) {
+    assert.strictEqual(draftFrames[pool].length, bank.effects.length, `Missing drafted card frame for ${pool}`);
+    for (const frame of draftFrames[pool]) {
+      assert(['Attack', 'Skill', 'Power'].includes(frame.type) && frame.cost >= 0, `Invalid drafted card frame for ${pool}`);
     }
   }
   const relicFile = path.join(__dirname, '..', 'export', '111', 'localization', 'zhs', 'relics.json');
@@ -99,6 +106,7 @@ setImmediate(() => {
     assert(zh.includes('很可惜，并不是真的。'));
     assert.strictEqual(element('side-note').textContent, '很可惜，并不是真的。');
     assert(!/undefined|\{[^}]+\}/.test(zh), 'Unresolved content in Chinese');
+    assert(zh.includes('<ul class="rework-details"><li>旧：') && zh.includes('</li><li>新：'), 'Chinese rework lacks old/new card details');
     samples.add(zh);
     vm.runInContext("setLanguage('en')", context);
     const en = element('article-content').innerHTML;
@@ -106,6 +114,7 @@ setImmediate(() => {
     assert(en.includes("Unfortunately, it isn&#39;t real."));
     assert.strictEqual(element('side-note').textContent, "Unfortunately, it isn't real.");
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
+    assert(en.includes('<ul class="rework-details"><li>Old: ') && en.includes('</li><li>New: '), 'English rework lacks old/new card details');
     vm.runInContext("setLanguage('zh')", context);
     const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length, entries:patch.entries})', context);
     const descriptions = Object.values(stats.entries).flat().filter(entry => entry.thought).map(entry => entry.thought[0]);
@@ -117,6 +126,20 @@ setImmediate(() => {
       if (entry.thought) assert(!/这一角色|该角色|当前角色|this character/.test(entry.thought.join(' ')), 'Colorless treated as character');
     }
     for (const entry of Object.values(stats.entries).flat()) {
+      if (entry.kind === 'rework') {
+        const detail = vm.runInContext('lineFor', context)(entry);
+        assert(/旧：[^<]+ - (攻击牌|技能牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'Original rework card frame is missing');
+        assert(/新：[^<]+ - (攻击牌|技能牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'New rework card frame is missing');
+        assert.strictEqual(entry.oldFrame.type, entry.card.type, 'Original rework type differs from catalog');
+        assert.strictEqual(entry.oldFrame.rarity, entry.card.rarity, 'Original rework rarity differs from catalog');
+        assert.strictEqual(entry.oldFrame.cost, entry.card.cost, 'Original rework cost differs from catalog');
+        assert.strictEqual(entry.oldFrame.upCost, entry.card.upCost, 'Original rework upgrade cost differs from catalog');
+        assert.strictEqual(entry.newFrame.type, entry.oldFrame.type, 'Rework effect must match its card type');
+        assert(entry.newFrame.cost >= entry.newFrame.upCost && entry.newFrame.upCost >= 0, 'Reworked upgrade cost is invalid');
+      }
+      if (entry.kind === 'new') {
+        assert(['Attack', 'Skill', 'Power'].includes(entry.frame.type) && entry.frame.cost >= 0, 'New card lacks its frame');
+      }
       if (entry.kind === 'baseOnly') {
         const polarity = vm.runInContext('beneficialDirection', context)(entry.card, entry.variable);
         assert(polarity * (entry.variable.up - Number(entry.next)) > 0, 'Base-only change overtakes upgraded value');

@@ -113,6 +113,16 @@ const wordBanks = {
   Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']], effects: [['造成 9(12) 点伤害。生成 1 个闪电充能球。', 'Deal 9(12) damage. Channel 1 Lightning Orb.'], ['获得 8(11) 点格挡。若你本回合激发过充能球，抽 1 张牌。', 'Gain 8(11) Block. If you Evoked an Orb this turn, draw 1 card.'], ['获得 1(2) 点集中。下个回合开始时失去 1 点集中。', 'Gain 1(2) Focus. At the start of your next turn, lose 1 Focus.']] },
   Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3(4) 张随机无色牌中选择 1 张加入手牌。本回合可以免费打出。消耗。', 'Choose 1 of 3(4) random Colorless cards to add to your hand. It is free to play this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
 };
+// Each drafted effect has a fixed card frame, so reworks and new cards can show
+// the same type and cost details as the original patch notes.
+const draftFrames = {
+  Ironclad: [{ type: 'Skill', cost: 1 }, { type: 'Attack', cost: 2 }, { type: 'Skill', cost: 1 }],
+  Silent: [{ type: 'Skill', cost: 1 }, { type: 'Attack', cost: 1 }, { type: 'Skill', cost: 1 }],
+  Regent: [{ type: 'Skill', cost: 1 }, { type: 'Attack', cost: 2 }, { type: 'Skill', cost: 1 }],
+  Necrobinder: [{ type: 'Attack', cost: 1 }, { type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }],
+  Defect: [{ type: 'Attack', cost: 1 }, { type: 'Skill', cost: 1 }, { type: 'Power', cost: 1 }],
+  Colorless: [{ type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }]
+};
 const ancientReferences = [
   { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', stat: ['金币', 'Gold'], base: 999, direction: -1, benefit: true },
   { name: 'Regalite', zh: '君王矿石', stat: ['格挡', 'Block'], base: 4, benefit: true },
@@ -361,14 +371,13 @@ function canShowOriginalDescription(card) {
 }
 function makeRework(card) {
   const bank = wordBanks[card.pool];
-  const effectTypes = {
-    Ironclad: ['Skill', 'Attack', 'Skill'], Silent: ['Skill', 'Attack', 'Skill'],
-    Regent: ['Skill', 'Attack', 'Skill'], Necrobinder: ['Attack', 'Skill', 'Skill'],
-    Defect: ['Attack', 'Skill', 'Power'], Colorless: ['Skill', 'Skill', 'Skill']
-  };
-  const compatible = bank.effects.filter((_, index) => effectTypes[card.pool][index] === card.type);
-  const effect = pick(compatible.length ? compatible : bank.effects);
-  return { kind: 'rework', card, old: [cleanDescription(card.descZh, card, 'zh'), cleanDescription(card.descEn, card, 'en')], next: effect,
+  const compatible = bank.effects.map((_, index) => index).filter(index => draftFrames[card.pool][index].type === card.type);
+  const index = pick(compatible);
+  const frame = draftFrames[card.pool][index];
+  const upgradeDiscount = card.cost - card.upCost;
+  return { kind: 'rework', card, old: [cleanDescription(card.descZh, card, 'zh'), cleanDescription(card.descEn, card, 'en')], next: bank.effects[index],
+    oldFrame: { rarity: card.rarity, type: card.type, cost: card.cost, upCost: card.upCost },
+    newFrame: { rarity: card.rarity, type: frame.type, cost: frame.cost, upCost: Math.max(0, frame.cost - upgradeDiscount) },
     thought: pick([
       ['我们希望它有更明确的构筑方向，同时保留原本的主题。', 'We want this to point toward a clearer build while keeping the card’s original theme.'],
       ['旧版本很难在合适的时机发挥作用，所以我们尝试了更直接的效果。', 'The old version had trouble finding the right moment, so we’re trying a more direct effect.'],
@@ -381,6 +390,7 @@ function makeNew(pool, existingEntries = []) {
     !existingEntries.some(entry => entry.kind === 'rework' && entry.next === bank.effects[index]));
   const index = pick(available);
   return { kind: 'new', pool, name: bank.names[index], effect: bank.effects[index],
+    frame: { rarity: 'Uncommon', ...draftFrames[pool][index], upCost: draftFrames[pool][index].cost },
     thought: pick(pool === 'Colorless' ? [
       ['我们想让无色牌为不同牌组提供一种新的选择。', 'We wanted this Colorless card to offer a new option across different decks.'],
       ['这张无色牌可能会与多种机制产生互动，我们会关注它的表现。', 'This Colorless card may interact with several mechanics, and we’ll watch how it performs.']
@@ -421,7 +431,8 @@ function generatePatch() {
   });
   const reworkPool = pick(pools.slice(0, 5));
   const reworkCard = pick(catalog.filter(c => c.pool === reworkPool && !used.has(c.en) &&
-    c.rarity !== 'Basic' && ['Attack', 'Skill'].includes(c.type) && c.descEn.length < 190 &&
+    ['Common', 'Uncommon', 'Rare'].includes(c.rarity) && ['Attack', 'Skill'].includes(c.type) &&
+    c.cost >= 0 && c.upCost >= 0 && c.descEn.length < 190 &&
     canShowOriginalDescription(c)));
   if (reworkCard) { entries[reworkPool].splice(rand(0, entries[reworkPool].length), 0, makeRework(reworkCard)); used.add(reworkCard.en); }
   if (Math.random() < .18) {
@@ -460,17 +471,34 @@ function generatePatch() {
   $('landing').classList.add('hidden');
   $('article-shell').classList.remove('hidden');
 }
+function cardFrameText(frame) {
+  const types = { Attack: ['攻击牌', 'Attack'], Skill: ['技能牌', 'Skill'], Power: ['能力牌', 'Power'] };
+  const rarities = { Common: ['普通', 'Common'], Uncommon: ['罕见', 'Uncommon'], Rare: ['稀有', 'Rare'] };
+  const position = language === 'zh' ? 0 : 1;
+  const cost = valuePair(frame.cost, frame.upCost);
+  return types[frame.type][position] + ' - ' + (language === 'zh' ? '耗能' : 'Cost ') + cost + ' - ' + rarities[frame.rarity][position];
+}
+function cardDetail(name, frame, effect) {
+  return escapeHtml(name) + ' - ' + escapeHtml(cardFrameText(frame)) + ' - “' + escapeHtml(tr(effect)) + '”';
+}
 function lineFor(entry) {
   if (entry.kind === 'new') {
-    const name = escapeHtml(tr(entry.name)), effect = escapeHtml(tr(entry.effect));
-    return '<li>' + (language === 'zh' ? '新增卡牌<strong>' : 'Added <strong>') + name + (language === 'zh' ? '</strong>：<em>' : '</strong>: <em>') + effect + '</em></li>' + thoughtFor(entry);
+    const name = tr(entry.name);
+    return '<li>' + (language === 'zh' ? '新增卡牌<strong>' : 'Added <strong>') + escapeHtml(name) +
+      (language === 'zh' ? '</strong>：' : '</strong> card: ') + escapeHtml(cardFrameText(entry.frame)) +
+      ' - “' + escapeHtml(tr(entry.effect)) + '”</li>' + thoughtFor(entry);
   }
   const name = escapeHtml(language === 'zh' ? entry.card.zh : entry.card.en);
   if (entry.kind === 'remove')
     return '<li>' + (language === 'zh' ? '移除卡牌<strong>' : 'Removed <strong>') + name + (language === 'zh' ? '</strong>。</li>' : '</strong>.</li>') + thoughtFor(entry);
-  if (entry.kind === 'rework')
-    return '<li>' + (language === 'zh' ? '重做<strong>' : 'Reworked <strong>') + name + (language === 'zh' ? '</strong>：由“' : '</strong>: “') +
-      escapeHtml(tr(entry.old)) + (language === 'zh' ? '”改为“' : '” → “') + escapeHtml(tr(entry.next)) + '”</li>' + thoughtFor(entry);
+  if (entry.kind === 'rework') {
+    const plainName = language === 'zh' ? entry.card.zh : entry.card.en;
+    return '<li>' + (language === 'zh' ? '重做了<strong>' : 'Reworked <strong>') + name +
+      (language === 'zh' ? '</strong>：' : '</strong> card:') +
+      '<ul class="rework-details"><li>' + (language === 'zh' ? '旧：' : 'Old: ') + cardDetail(plainName, entry.oldFrame, entry.old) +
+      '</li><li>' + (language === 'zh' ? '新：' : 'New: ') + cardDetail(plainName, entry.newFrame, entry.next) +
+      '</li></ul></li>' + thoughtFor(entry);
+  }
   if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整<strong>' : 'Changed <strong>') +
     name + (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
   if (entry.kind === 'rarity') return '<li>' + (language === 'zh' ? '改动了<strong>' : 'Changed <strong>') +

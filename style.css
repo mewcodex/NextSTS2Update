@@ -151,6 +151,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid #9bd8fc; outline-offs
 .article-content ul { margin: 0 0 23px; padding-left: 38px; }
 .article-content li { margin: 3px 0; padding-left: 1px; }
 .article-content li::marker { color: #c5c7ca; }
+.article-content .rework-details { margin: 4px 0 8px; padding-left: 24px; }
+.article-content .rework-details li { margin: 3px 0; }
 .article-content li.thought {
   list-style: none;
   margin: 3px 0 11px 13px;
