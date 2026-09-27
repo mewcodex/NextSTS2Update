@@ -7,6 +7,7 @@ let language = 'zh';
 let catalog = [];
 let patch = null;
 let liked = false;
+let disliked = false;
 
 const pools = ['Ironclad', 'Silent', 'Regent', 'Necrobinder', 'Defect', 'Colorless'];
 const poolNames = {
@@ -16,16 +17,17 @@ const poolNames = {
 };
 const ui = {
   generate: ['生成更新', 'Generate patch'], again: ['重新生成', 'Generate again'],
-  type: ['公告', 'Announcement'], date: ['2026 年 9 月 27 日', 'Sep 27, 2026'],
+  type: ['小型更新/补丁说明', 'Small Update / Patch Notes'], date: ['2026 年 9 月 27 日', 'Sep 27, 2026'],
   store: ['商店', 'STORE'], community: ['社区', 'COMMUNITY'], about: ['关于', 'ABOUT'],
-  support: ['客服', 'SUPPORT'], crumbCommunity: ['社区中心', 'Community Hub'],
-  news: ['新闻', 'News'], gameSub: ['游戏新闻', 'Game News'],
-  statusTitle: ['状态', 'STATUS'], status: ['Beta 分支 · 虚构公告', 'Beta branch · fictional post'],
+  support: ['客服', 'SUPPORT'], crumbCommunity: ['所有活动', 'All Events'],
+  news: ['活动', 'Events'], gameLabel: ['游戏', 'GAME'],
+  dateLabel: ['发布于', 'POSTED'], typeLabel: ['类型', 'TYPE'],
   controls: ['再来一次？', 'ANOTHER ONE?'],
   sideNote: ['娱乐网站。所有生成内容均非官方更新。', 'For entertainment. Every generated change is fictional.'],
-  like: ['点赞', 'Like'], comment: ['评论', 'Comment'],
-  content: ['内容与平衡', 'CONTENT & BALANCE'], ux: ['界面与体验', 'USER INTERFACE & EXPERIENCE'],
-  bugs: ['错误修复', 'BUG FIXES'], modding: ['模组开发', 'MODDING'],
+  like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['分享', 'Share'],
+  dislike: ['踩', 'Dislike'], copied: ['已复制', 'Copied'],
+  content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
+  bugs: ['错误修复：', 'BUG FIXES:'], modding: ['模组开发：', 'MODDING:'],
   general: ['一般', 'General'], multiplayer: ['多人游戏', 'Multiplayer']
 };
 const tr = pair => pair[language === 'zh' ? 0 : 1];
@@ -248,6 +250,7 @@ function generatePatch() {
     ux: shuffle(uxLines).slice(0, rand(3, 5)), bugs: shuffle(bugs).slice(0, rand(6, 9)),
     modding: shuffle(modLines).slice(0, rand(2, 4)), likes: rand(420, 2700), comments: rand(55, 430) };
   liked = false;
+  disliked = false;
   render();
   $('landing').classList.add('hidden');
   $('article-shell').classList.remove('hidden');
@@ -282,10 +285,11 @@ function render() {
   for (const [id, key] of Object.entries({
     'generate-main':'generate','generate-again':'again','post-type':'type','post-date':'date',
     'nav-store':'store','nav-community':'community','nav-about':'about','nav-support':'support',
-    'crumb-community':'crumbCommunity','crumb-news':'news','game-sub':'gameSub',
-    'side-status-title':'statusTitle','side-status':'status','side-controls-title':'controls',
-    'side-note':'sideNote','like-label':'like','comment-label':'comment'
+    'crumb-community':'crumbCommunity','crumb-news':'news','game-label':'gameLabel',
+    'date-label':'dateLabel','post-type-label':'typeLabel','side-controls-title':'controls',
+    'side-note':'sideNote','like-label':'like','comment-label':'comment','share-label':'share'
   })) $(id).textContent = tr(ui[key]);
+  $('dislike-button').setAttribute('aria-label', tr(ui.dislike));
   if (!patch) return;
   let html = '<p>' + escapeHtml(tr(patch.intro)) + '</p><p>' + escapeHtml(tr(patch.bridge)) + '</p>';
   html += '<h2>' + tr(ui.content) + '</h2>';
@@ -304,12 +308,14 @@ function render() {
   html += '<h2>' + tr(ui.modding) + '</h2>' + list(patch.modding);
   html += '<p class="closing">' + escapeHtml(tr(patch.ending)) + '</p>';
   html += '<p class="fiction-note">' + (language === 'zh' ?
-    '这是娱乐性质的虚构公告。公告结构参考 <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">Steam 官方新闻</a>；卡牌名称与基础数值来自本地游戏资料。' :
-    'This is a fictional post for entertainment. The format references <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">official Steam news</a>; card names and base values come from local game reference data.') + '</p>';
+    '这是娱乐性质的虚构公告。公告结构参考 <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">官方更新公告</a>；卡牌名称与基础数值来自本地游戏资料。' :
+    'This is a fictional post for entertainment. The format references <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">official patch notes</a>; card names and base values come from local game reference data.') + '</p>';
   $('article-content').innerHTML = html;
   $('like-count').textContent = (patch.likes + Number(liked)).toLocaleString();
   $('like-button').classList.toggle('selected', liked);
   $('like-button').setAttribute('aria-pressed', liked);
+  $('dislike-button').classList.toggle('selected', disliked);
+  $('dislike-button').setAttribute('aria-pressed', disliked);
   $('comment-count').textContent = patch.comments.toLocaleString();
   $('comments').innerHTML = '<strong>' + (language === 'zh' ? '社区评论' : 'Community comments') + '</strong>' +
     (language === 'zh' ? '<p><strong>SpireFan:</strong> 等一下，这个数值真的改了吗？</p><p><strong>OstyEnjoyer:</strong> 先让我开一局试试。</p>' :
@@ -326,10 +332,19 @@ function safeGenerate() {
 }
 $('generate-main').addEventListener('click', safeGenerate);
 $('generate-again').addEventListener('click', safeGenerate);
-$('like-button').addEventListener('click', () => { liked = !liked; render(); });
+$('like-button').addEventListener('click', () => { liked = !liked; if (liked) disliked = false; render(); });
+$('dislike-button').addEventListener('click', () => { disliked = !disliked; if (disliked) liked = false; render(); });
 $('comment-button').addEventListener('click', () => {
   const shown = !$('comments').classList.toggle('hidden');
   $('comment-button').setAttribute('aria-expanded', shown);
+});
+$('share-button').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    $('share-label').textContent = tr(ui.copied);
+  } catch (_) {
+    $('share-label').textContent = tr(ui.share);
+  }
 });
 fetch('cards.json').then(response => {
   if (!response.ok) throw new Error('Card catalog unavailable');

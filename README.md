@@ -18,3 +18,4 @@
 - 公告层级与语气参考了 [Steam 上 v0.100.0 至 v0.111.0 的 Beta 更新日志](https://store.steampowered.com/news/app/2868840)。这不是官方公告。
 
 所有页面内容仅供娱乐。Steam 和 Slay the Spire 2 名称属于各自权利人。
+页面使用 `ST3AM` 戏仿标识；横幅与游戏封面由官方图片 CDN 加载，断网时仍可使用公告生成器。

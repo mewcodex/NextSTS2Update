@@ -1,2 +1,324 @@
-:root{font-family:Arial,"Microsoft YaHei","PingFang SC",sans-serif;color:#d8dce1;background:#171d27;font-size:16px}*{box-sizing:border-box}body{margin:0;min-width:320px}button{font:inherit;cursor:pointer}.hidden{display:none!important}.landing{min-height:100dvh;background:#171d27;position:relative;display:grid;place-items:center}.language-switch{position:absolute;right:clamp(22px,5vw,80px);top:28px;display:flex;align-items:center;gap:9px;color:#657789}.language-switch button,.header-lang button{border:0;background:transparent;color:#9aaabd;padding:5px 2px;font-size:.9rem}.language-switch button.active,.header-lang button.active{color:#fff}.language-switch button:hover,.header-lang button:hover{color:#66c0f4}.generate-main{background:linear-gradient(100deg,#64cbe8,#2795cf);border:0;border-radius:3px;color:#fff;font-size:1.35rem;letter-spacing:.08em;padding:19px 47px;box-shadow:0 8px 28px #0005;transition:transform .15s,filter .15s}.generate-main:hover,.again-button:hover{filter:brightness(1.15);transform:translateY(-2px)}.generate-main:active,.again-button:active{transform:translateY(0)}.steam-header{height:84px;background:#171a21}.steam-header-inner{max-width:1120px;height:100%;margin:auto;display:flex;align-items:center;gap:46px;padding:0 24px}.steam-brand{display:flex;gap:9px;align-items:center;color:#f3f3f3;font-size:1.65rem;font-weight:700;letter-spacing:.1em}.steam-mark{font-size:2rem;line-height:1}.steam-header nav{display:flex;gap:25px;color:#dcdedf;font-size:.9rem;letter-spacing:.05em}.header-lang{margin-left:auto;white-space:nowrap;color:#617181}.steam-page{min-height:calc(100dvh - 84px);background:radial-gradient(ellipse 95% 420px at 50% 0,#27475b 0,#1a2a38 65%,#162330 100%);padding:0 24px 80px}.breadcrumbs,.game-title,.layout{max-width:1120px;margin:auto}.breadcrumbs{display:flex;gap:9px;padding-top:26px;color:#8fabbc;font-size:.77rem}.game-title{display:flex;gap:13px;align-items:center;padding:22px 0 25px}.game-icon{display:grid;place-items:center;width:49px;height:49px;color:#e8d9ab;background:linear-gradient(135deg,#343e48,#0e1115);border:1px solid #687989;font-family:Georgia,serif;font-size:1.7rem}.game-name{font-size:1.55rem;color:#fff}.game-sub{font-size:.79rem;color:#8aabbf;margin-top:4px}.layout{display:grid;grid-template-columns:minmax(0,760px) 280px;gap:20px;align-items:start}.article{background:linear-gradient(#253a4c 0,#1c2b3a 170px,#182634 100%);min-width:0;box-shadow:0 8px 18px #0003}.article-heading{padding:31px 36px 28px;border-bottom:1px solid #ffffff12}.overline{color:#8bc7e4;font-size:.76rem;text-transform:uppercase;letter-spacing:.08em}.article-heading h1{color:#fff;font-size:1.9rem;font-weight:400;line-height:1.2;margin:12px 0 18px}.byline{display:flex;gap:10px;color:#8299a8;font-size:.84rem}.article-content{padding:29px 36px 20px;color:#c7d5e0;line-height:1.6;font-size:1rem}.article-content p{margin:0 0 1.15em}.article-content h2{font-weight:400;font-size:1.35rem;line-height:1.25;color:#fff;background:#30485a;border-left:4px solid #69bce0;padding:9px 12px;margin:30px 0 16px}.article-content h3{font-size:1.03rem;font-weight:700;color:#e6edf2;margin:24px 0 9px}.article-content ul{margin:0 0 16px;padding-left:23px}.article-content li{padding-left:2px;margin:5px 0}.article-content li::marker{color:#7894aa}.article-content strong{color:#fff;font-weight:700}.article-content em{font-style:normal;color:#a7bfd0}.article-content .thought{color:#a8bac8;margin:4px 0 11px 22px;font-style:italic}.article-content .closing{margin-top:23px}.article-footer{border-top:1px solid #ffffff16;padding:20px 36px 24px}.reactions{display:flex;gap:10px}.reaction{border:0;background:#283e50;color:#b8c9d7;border-radius:2px;padding:9px 12px;display:flex;gap:8px;align-items:center;font-size:.86rem}.reaction b{font-weight:400;color:#8faabd}.reaction:hover,.reaction.selected{background:#3b6078;color:white}.comments{margin-top:22px;border-top:1px solid #ffffff18;padding-top:16px;color:#9eb2c0;font-size:.9rem}.comments p{background:#1c2a37;padding:12px;margin:9px 0}.comments strong{color:#b3d7eb}.sidebar{color:#c6d6e0}.side-panel{background:linear-gradient(#244157,#1b3143);padding:22px 19px}.side-caption{font-size:.73rem;letter-spacing:.08em;color:#8caabc;text-transform:uppercase;margin-bottom:13px}.side-status{display:flex;gap:9px;align-items:center;font-size:.83rem}.status-dot{width:7px;height:7px;background:#83be50;border-radius:50%;box-shadow:0 0 8px #83be50}.side-divider{height:1px;background:#ffffff18;margin:22px 0}.again-button{background:linear-gradient(90deg,#75b022,#588c18);color:#fff;border:0;border-radius:2px;padding:10px 16px;transition:transform .15s,filter .15s}.side-note{font-size:.77rem;line-height:1.5;color:#829aab;margin:16px 3px}.source-link{color:#8bc7e4;text-decoration:none}.source-link:hover{text-decoration:underline}button:focus-visible,a:focus-visible{outline:2px solid #fff;outline-offset:3px}@media(max-width:800px){.layout{display:block}.sidebar{margin-top:18px}.steam-header nav{display:none}.steam-header{height:64px}.steam-header-inner{gap:0}.steam-brand{font-size:1.25rem}.steam-page{min-height:calc(100dvh - 64px)}.article-heading,.article-content,.article-footer{padding-left:22px;padding-right:22px}.article-heading h1{font-size:1.55rem}.game-title{padding:18px 0}.side-panel{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.side-panel .side-caption,.side-panel .side-status,.side-divider{display:none}.side-note{margin:12px 3px}}@media(max-width:480px){.steam-page{padding-left:12px;padding-right:12px}.article-heading,.article-content,.article-footer{padding-left:17px;padding-right:17px}.article-content{font-size:.96rem}.breadcrumbs{padding-top:17px}.game-name{font-size:1.27rem}.game-icon{width:40px;height:40px}.steam-brand{letter-spacing:.04em}}
-.article-content li.thought{list-style:none;margin:2px 0 10px 12px;padding-left:0}.article-content li.thought::marker{content:""}.fiction-note{font-size:.78rem;color:#829aab;border-top:1px solid #ffffff18;padding-top:16px;margin-top:30px!important}
+:root {
+  color-scheme: dark;
+  font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif;
+  font-size: 16px;
+  color: #dcdedf;
+  background: #24272c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; cursor: pointer; }
+.hidden { display: none !important; }
+button:focus-visible, a:focus-visible { outline: 2px solid #9bd8fc; outline-offset: 3px; }
+
+.landing {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background: #171d27;
+}
+.language-switch {
+  position: absolute;
+  top: 28px;
+  right: clamp(22px, 5vw, 80px);
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: #657789;
+}
+.language-switch button, .header-lang button {
+  border: 0;
+  padding: 5px 2px;
+  background: transparent;
+  color: #9aaabd;
+  font-size: .9rem;
+}
+.language-switch button.active, .header-lang button.active { color: #fff; }
+.language-switch button:hover, .header-lang button:hover { color: #66c0f4; }
+.generate-main {
+  border: 0;
+  border-radius: 3px;
+  padding: 19px 47px;
+  background: linear-gradient(100deg, #64cbe8, #2795cf);
+  color: #fff;
+  font-size: 1.35rem;
+  letter-spacing: .08em;
+  box-shadow: 0 8px 28px #0005;
+  transition: filter .15s, transform .15s;
+}
+.generate-main:hover, .again-button:hover { filter: brightness(1.15); transform: translateY(-2px); }
+.generate-main:active, .again-button:active { transform: translateY(0); }
+
+.article-shell { min-height: 100dvh; background: #24272c; }
+.steam-header { height: 102px; background: #171a21; }
+.steam-header-inner {
+  max-width: 1200px;
+  height: 100%;
+  margin: auto;
+  padding: 0 30px;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+.steam-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #e6e7e8;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  white-space: nowrap;
+}
+.steam-mark {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border: 3px solid currentColor;
+  border-radius: 50%;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+.steam-header nav { display: flex; gap: 18px; font-size: .91rem; font-weight: 600; }
+.steam-header nav span:first-child { color: #68aedb; border-bottom: 2px solid #68aedb; }
+.header-lang { margin-left: auto; white-space: nowrap; color: #617181; }
+.hero-banner {
+  height: 330px;
+  background: #151820 url("https://clan.fastly.steamstatic.com/images/44971832/8e21941557350cd640488161bcb70a1cf06ea990.png") center 41% / cover no-repeat;
+}
+.steam-page {
+  position: relative;
+  max-width: 1065px;
+  margin: -75px auto 0;
+  padding: 0 0 90px;
+}
+.news-panel {
+  background: linear-gradient(115deg, #34373d 0%, #292c32 43%, #22262c 100%);
+  border-radius: 2px;
+  box-shadow: 0 5px 14px #0008;
+  overflow: hidden;
+}
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 27px 24px 0;
+  color: #9a9b9e;
+  font-size: .77rem;
+}
+.news-panel h1 {
+  margin: 22px 24px 38px;
+  color: #e5e5e5;
+  font-size: 2.15rem;
+  line-height: 1.2;
+  font-weight: 300;
+  letter-spacing: .005em;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 325px;
+  align-items: stretch;
+}
+.article { min-width: 0; }
+.article-content {
+  padding: 0 24px 31px;
+  color: #d8d8d9;
+  font-size: .92rem;
+  line-height: 1.33;
+  overflow-wrap: anywhere;
+}
+.article-content p { margin: 0 0 1.3em; }
+.article-content h2 {
+  margin: 33px 0 25px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f5f5f5;
+  font-size: 1.55rem;
+  line-height: 1.3;
+  font-weight: 400;
+}
+.article-content h3 {
+  margin: 27px 0 2px;
+  color: #dedfe0;
+  font-size: .92rem;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.article-content ul { margin: 0 0 23px; padding-left: 38px; }
+.article-content li { margin: 3px 0; padding-left: 1px; }
+.article-content li::marker { color: #c5c7ca; }
+.article-content li.thought {
+  list-style: none;
+  margin: 3px 0 11px 13px;
+  padding-left: 0;
+  color: #aeb5bd;
+  font-style: italic;
+}
+.article-content li.thought::marker { content: ""; }
+.article-content strong { color: #ececed; font-weight: 700; }
+.article-content em { color: #c9cdd1; font-style: normal; }
+.article-content .closing { margin-top: 27px; }
+.article-content .fiction-note {
+  margin-top: 35px;
+  padding-top: 15px;
+  border-top: 1px solid #ffffff1c;
+  color: #a1a7ae;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+.source-link { color: #9dbdd3; text-decoration: none; }
+.source-link:hover { text-decoration: underline; }
+
+.sidebar {
+  min-width: 0;
+  border-left: 1px solid #17191d;
+  padding: 0 24px 26px;
+  color: #c1c4c8;
+}
+.side-caption {
+  margin: 0 0 8px;
+  color: #9a9ca0;
+  font-size: .78rem;
+  line-height: 1.3;
+}
+.game-card {
+  overflow: hidden;
+  border-radius: 3px;
+  margin-bottom: 11px;
+  background: #090b10;
+}
+.game-card img { display: block; width: 100%; height: auto; aspect-ratio: 460 / 215; object-fit: cover; }
+.game-price { height: 30px; padding: 5px 10px; text-align: right; color: white; font-size: .85rem; }
+.fake-follow {
+  height: 38px;
+  margin: 0 0 26px;
+  padding: 2px 15px;
+  background: #15171c;
+  color: #c7c8ca;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.side-value { margin: 0 0 25px; font-size: .84rem; }
+.side-divider { height: 1px; background: #ffffff15; margin: 25px 0; }
+.again-button {
+  border: 0;
+  border-radius: 2px;
+  padding: 9px 15px;
+  background: linear-gradient(90deg, #79ae28, #5c8e20);
+  color: white;
+  transition: filter .15s, transform .15s;
+}
+.side-note { margin-top: 17px; color: #9da4ab; font-size: .76rem; line-height: 1.45; }
+
+.article-footer {
+  min-width: 0;
+  padding: 23px 24px 25px;
+  background: #34373d;
+  border-top: 1px solid #ffffff12;
+}
+.reactions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+.reaction-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 13px 10px;
+  background: #2b2e34;
+  border-radius: 3px;
+  min-height: 62px;
+}
+.reaction-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 84px;
+  padding: 0 6px;
+  color: #67b5f2;
+  white-space: nowrap;
+}
+.reaction-count b { font-size: .98rem; font-weight: 700; letter-spacing: .02em; }
+.reaction-count svg { width: 22px; height: 22px; fill: currentColor; }
+.reaction {
+  min-width: 76px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 2px;
+  padding: 0 12px;
+  background: #434954;
+  color: #d0d3d8;
+  font-size: .85rem;
+  line-height: 1;
+}
+.reaction svg { width: 18px; height: 18px; fill: currentColor; }
+.reaction:hover, .reaction.selected { background: #566475; color: #fff; }
+.reaction.selected { color: #73c1ff; }
+.reaction.icon-only { min-width: 47px; }
+.reaction.share-button { min-width: 110px; margin-left: auto; background: #434954; }
+.share-button svg { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.comments {
+  max-width: 710px;
+  margin-top: 20px;
+  padding: 16px 0 0;
+  border-top: 1px solid #ffffff1c;
+  color: #bfc5cb;
+  font-size: .88rem;
+}
+.comments p { margin: 9px 0 0; padding: 13px; background: #292d33; }
+.comments strong { color: #7fbfe7; }
+
+@media (max-width: 1100px) {
+  .steam-page { margin-left: 20px; margin-right: 20px; }
+}
+@media (max-width: 850px) {
+  .steam-header { height: 72px; }
+  .steam-header-inner { padding: 0 22px; gap: 28px; }
+  .steam-header nav { gap: 12px; font-size: .82rem; }
+  .hero-banner { height: 260px; }
+  .steam-page { margin-top: -49px; }
+  .layout { grid-template-columns: minmax(0, 1fr) 235px; }
+  .sidebar { padding: 0 16px 22px; }
+  .news-panel h1 { font-size: 1.9rem; }
+}
+@media (max-width: 650px) {
+  .steam-header { height: 62px; }
+  .steam-header-inner { gap: 16px; }
+  .steam-header nav { display: none; }
+  .steam-brand { font-size: 1.21rem; gap: 8px; }
+  .steam-mark { width: 33px; height: 33px; border-width: 2px; font-size: 1.2rem; }
+  .hero-banner { height: 190px; background-position: center 35%; }
+  .steam-page { margin: -28px 10px 0; padding-bottom: 35px; }
+  .breadcrumbs { padding: 18px 18px 0; font-size: .74rem; }
+  .news-panel h1 { margin: 16px 18px 25px; font-size: 1.55rem; }
+  .layout { display: flex; flex-direction: column; }
+  .article-content { padding: 0 18px 12px; font-size: 1rem; line-height: 1.48; }
+  .article-content h2 { margin: 30px 0 18px; font-size: 1.33rem; }
+  .article-content h3 { margin-top: 25px; font-size: .97rem; }
+  .article-content ul { padding-left: 25px; }
+  .sidebar { border-left: 0; border-top: 1px solid #ffffff15; padding: 19px 18px 22px; }
+  .sidebar .game-card, .sidebar .fake-follow, .sidebar #game-label { display: none; }
+  .sidebar #date-label, .sidebar #post-type-label { display: inline; margin-right: 8px; }
+  .sidebar .side-value { display: inline; margin-right: 15px; font-size: .78rem; }
+  .sidebar .side-divider { margin: 15px 0; }
+  .sidebar .side-note { margin-top: 12px; }
+  .article-footer { padding: 16px 10px 20px; }
+  .reactions { align-items: stretch; gap: 7px; }
+  .reaction-group { min-height: 54px; padding: 8px 6px; gap: 5px; }
+  .reaction-count { min-width: 66px; padding: 0 3px; gap: 4px; }
+  .reaction-count b { font-size: .84rem; }
+  .reaction-count svg { width: 18px; height: 18px; }
+  .reaction { min-width: 52px; height: 32px; padding: 0 8px; }
+  .reaction.icon-only { min-width: 35px; }
+  .reaction.share-button { min-width: 82px; margin-left: 0; }
+}
+@media (max-width: 390px) {
+  .reaction-group { flex-grow: 1; }
+  .reaction.share-button { margin-left: auto; }
+  .header-lang button { font-size: .78rem; }
+}
