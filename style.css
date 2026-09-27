@@ -9,6 +9,13 @@
 body { margin: 0; min-width: 320px; }
 button { font: inherit; cursor: pointer; }
 .hidden { display: none !important; }
+.image-preview { position: fixed; inset: 0; z-index: 100; background: #161a20; display: flex; flex-direction: column; }
+.preview-toolbar { min-height: 56px; padding: 8px 14px; display: flex; align-items: center; gap: 14px; color: #dce5ed; background: #252b33; }
+.preview-toolbar span { margin-right: auto; }
+.preview-toolbar a { color: #9ec9e5; text-decoration: none; white-space: nowrap; }
+.preview-toolbar button { border: 0; background: transparent; color: #e5e9ed; font-size: 30px; line-height: 1; }
+.preview-scroll { flex: 1; overflow: auto; text-align: center; padding: 12px; }
+.preview-scroll img { display: block; width: 100%; max-width: 760px; height: auto; margin: 0 auto; touch-action: pinch-zoom; }
 button:focus-visible, a:focus-visible { outline: 2px solid #9bd8fc; outline-offset: 3px; }
 
 .landing {

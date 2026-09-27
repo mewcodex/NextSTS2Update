@@ -9,6 +9,7 @@ let world = null;
 let patch = null;
 let liked = false;
 let disliked = false;
+let previewImageUrl = null;
 
 const pools = ['Ironclad', 'Silent', 'Regent', 'Necrobinder', 'Defect', 'Colorless'];
 const poolNames = {
@@ -26,6 +27,8 @@ const ui = {
   controls: ['再来一次？', 'ANOTHER ONE?'],
   sideNote: ['很可惜，并不是真的。', "Unfortunately, it isn't real."],
   like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['下载截图', 'Download image'],
+  preview: ['查看截图', 'View image'], previewHint: ['长按图片可保存', 'Long press the image to save'],
+  previewSave: ['下载图片', 'Download image'], previewClose: ['关闭', 'Close'],
   dislike: ['踩', 'Dislike'], copied: ['已保存', 'Saved'],
   content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
   bugs: ['漏洞修复：', 'BUG FIXES:'], modding: ['模组制作：', 'MODDING:'],
@@ -581,6 +584,11 @@ function render() {
     'date-label':'dateLabel','post-type-label':'typeLabel','side-controls-title':'controls',
     'side-note':'sideNote','like-label':'like','comment-label':'comment','share-label':'share'
   })) $(id).textContent = tr(ui[key]);
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) $('share-label').textContent = tr(ui.preview);
+  $('preview-title').textContent = tr(ui.previewHint);
+  $('preview-save').textContent = tr(ui.previewSave);
+  $('preview-close').setAttribute('aria-label', tr(ui.previewClose));
+  $('preview-image').alt = tr(ui.preview);
   $('dislike-button').setAttribute('aria-label', tr(ui.dislike));
   if (!patch) return;
   let html = '<p>' + escapeHtml(tr(patch.intro)) + '</p><p>' + escapeHtml(tr(patch.bridge)) + '</p>';
@@ -651,13 +659,27 @@ $('comment-button').addEventListener('click', () => {
   const shown = !$('comments').classList.toggle('hidden');
   $('comment-button').setAttribute('aria-expanded', shown);
 });
+function closeImagePreview() {
+  $('image-preview').classList.add('hidden');
+  $('preview-image').removeAttribute('src');
+  $('preview-save').removeAttribute('href');
+  if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
+  previewImageUrl = null;
+}
+$('preview-close').addEventListener('click', closeImagePreview);
+$('image-preview').addEventListener('click', event => {
+  if (event.target === $('image-preview')) closeImagePreview();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !$('image-preview').classList.contains('hidden')) closeImagePreview();
+});
 $('share-button').addEventListener('click', async () => {
   const button = $('share-button');
   button.disabled = true;
   try {
     const article = document.querySelector('.news-panel');
     const canvas = await html2canvas(article, {
-      backgroundColor: '#292c32', scale: 2, useCORS: true,
+      backgroundColor: '#292c32', scale: 3, useCORS: true,
       windowWidth: Math.max(window.innerWidth, 900),
       onclone: clonedDocument => {
         const panel = clonedDocument.querySelector('.news-panel');
@@ -674,7 +696,7 @@ $('share-button').addEventListener('click', async () => {
         panel.querySelector('.article-footer').style.padding = '18px 20px 22px';
       }
     });
-    const footerHeight = 76;
+    const footerHeight = 114;
     const exportCanvas = document.createElement('canvas');
     exportCanvas.width = canvas.width;
     exportCanvas.height = canvas.height + footerHeight;
@@ -684,22 +706,37 @@ $('share-button').addEventListener('click', async () => {
     exportContext.fillRect(0, canvas.height, canvas.width, footerHeight);
     exportContext.strokeStyle = '#59616a';
     exportContext.beginPath();
-    exportContext.moveTo(40, canvas.height + 1);
-    exportContext.lineTo(canvas.width - 40, canvas.height + 1);
+    exportContext.moveTo(60, canvas.height + 1);
+    exportContext.lineTo(canvas.width - 60, canvas.height + 1);
     exportContext.stroke();
     exportContext.fillStyle = '#9ec9e5';
-    exportContext.font = '24px Arial, sans-serif';
+    exportContext.font = '36px Arial, sans-serif';
     exportContext.textAlign = 'center';
     exportContext.textBaseline = 'middle';
     exportContext.fillText('https://mewcodex.github.io/NextSTS2Update/', canvas.width / 2, canvas.height + footerHeight / 2);
-    const anchor = document.createElement('a');
-    anchor.download = `Next-STS2-Patch-v0.112.0-${language}.png`;
-    anchor.href = exportCanvas.toDataURL('image/png');
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    $('share-label').textContent = tr(ui.copied);
-    setTimeout(() => $('share-label').textContent = tr(ui.share), 2500);
+    const imageBlob = await new Promise(resolve => exportCanvas.toBlob(resolve, 'image/png'));
+    if (!imageBlob) throw new Error('Image encoding failed');
+    const imageUrl = URL.createObjectURL(imageBlob);
+    const filename = `Next-STS2-Patch-v0.112.0-${language}.png`;
+    if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+      if (previewImageUrl) URL.revokeObjectURL(previewImageUrl);
+      previewImageUrl = imageUrl;
+      $('preview-image').src = imageUrl;
+      $('preview-save').href = imageUrl;
+      $('preview-save').download = filename;
+      $('image-preview').classList.remove('hidden');
+      $('preview-close').focus();
+    } else {
+      const anchor = document.createElement('a');
+      anchor.download = filename;
+      anchor.href = imageUrl;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(imageUrl), 60000);
+      $('share-label').textContent = tr(ui.copied);
+      setTimeout(() => $('share-label').textContent = tr(ui.share), 2500);
+    }
   } catch (error) {
     console.error('Image export failed:', error);
     $('share-label').textContent = language === 'zh' ? '导出失败' : 'Export failed';

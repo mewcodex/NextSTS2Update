@@ -31,7 +31,7 @@ function element(id) {
   return elements.get(id);
 }
 const context = vm.createContext({
-  document: { getElementById: element, documentElement: {}, title: '' },
+  document: { getElementById: element, addEventListener() {}, documentElement: {}, title: '' },
   window: fakeWindow, requestAnimationFrame: callback => frames.push(callback), console,
   fetch: async url => ({ ok: true, json: async () => url === 'world.json' ? world : cards })
 });
@@ -220,7 +220,10 @@ setImmediate(() => {
   assert(ancientMoves > 70, 'Ancient option moves are too rare');
   assert(generator.includes("document.querySelector('.news-panel')") && generator.includes("panel.querySelector('.sidebar').style.display = 'none'"), 'Screenshot misses full article or sidebar exclusion');
   assert(generator.includes("exportContext.fillText('https://mewcodex.github.io/NextSTS2Update/'") &&
-    generator.includes("anchor.href = exportCanvas.toDataURL('image/png')"), 'Screenshot footer is missing the website link');
+    generator.includes("backgroundColor: '#292c32', scale: 3") &&
+    generator.includes("exportCanvas.toBlob(resolve, 'image/png')"), 'High resolution screenshot or website footer is missing');
+  assert(generator.includes("$('preview-image').src = imageUrl") && generator.includes("$('image-preview').classList.remove('hidden')"),
+    'Touch screen preview is missing');
   const before = vm.runInContext('patch', context);
   fakeWindow.scrollY = 300;
   vm.runInContext('smoothRegenerate()', context);
