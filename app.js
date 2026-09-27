@@ -23,7 +23,7 @@ const ui = {
   news: ['活动', 'Events'], gameLabel: ['游戏', 'GAME'],
   dateLabel: ['发布于', 'POSTED'], typeLabel: ['类型', 'TYPE'],
   controls: ['再来一次？', 'ANOTHER ONE?'],
-  sideNote: ['娱乐网站。所有生成内容均非官方更新。', 'For entertainment. Every generated change is fictional.'],
+  sideNote: ['很可惜，并不是真的。', "Unfortunately, it isn't real."],
   like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['下载截图', 'Download image'],
   dislike: ['踩', 'Dislike'], copied: ['已保存', 'Saved'],
   content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
@@ -415,9 +415,7 @@ function render() {
   html += '<h2>' + tr(ui.bugs) + '</h2>' + list(patch.bugs.map(x => x[0]));
   html += '<h2>' + tr(ui.modding) + '</h2>' + list(patch.modding);
   html += '<p class="closing">' + escapeHtml(tr(patch.ending)) + '</p>';
-  html += '<p class="fiction-note">' + (language === 'zh' ?
-    '这是娱乐性质的虚构公告。公告结构参考 <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">官方更新公告</a>；卡牌名称与基础数值来自本地游戏资料。' :
-    'This is a fictional post for entertainment. The format references <a class="source-link" href="https://store.steampowered.com/news/app/2868840" target="_blank" rel="noopener">official patch notes</a>; card names and base values come from local game reference data.') + '</p>';
+  html += '<p class="fiction-note">' + escapeHtml(tr(ui.sideNote)) + '</p>';
   $('article-content').innerHTML = html;
   $('like-count').textContent = (patch.likes + Number(liked)).toLocaleString();
   $('like-button').classList.toggle('selected', liked);

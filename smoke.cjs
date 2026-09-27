@@ -27,11 +27,15 @@ setImmediate(() => {
     vm.runInContext('generatePatch()', context);
     const zh = element('article-content').innerHTML;
     assert(zh.includes('先古之民') && zh.includes('敌人') && zh.includes('模组开发'));
+    assert(zh.includes('很可惜，并不是真的。'));
+    assert.strictEqual(element('side-note').textContent, '很可惜，并不是真的。');
     assert(!/undefined|\{[^}]+\}/.test(zh), 'Unresolved content in Chinese');
     samples.add(zh);
     vm.runInContext("setLanguage('en')", context);
     const en = element('article-content').innerHTML;
     assert(en.includes('Ancients') && en.includes('MODDING'));
+    assert(en.includes("Unfortunately, it isn&#39;t real."));
+    assert.strictEqual(element('side-note').textContent, "Unfortunately, it isn't real.");
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
     vm.runInContext("setLanguage('zh')", context);
     const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length})', context);
