@@ -28,7 +28,8 @@ const ui = {
   dislike: ['踩', 'Dislike'], copied: ['已保存', 'Saved'],
   content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
   bugs: ['错误修复：', 'BUG FIXES:'], modding: ['模组开发：', 'MODDING:'],
-  general: ['通用', 'General'], enemies: ['敌人', 'Enemies'], multiplayer: ['多人游戏', 'Multiplayer']
+  general: ['通用', 'General'], enemies: ['敌人', 'Enemies'], multiplayer: ['多人游戏', 'Multiplayer'],
+  relics: ['遗物', 'Relics'], events: ['事件', 'Events'], writing: ['文本与本地化：', 'WRITING & LOCALIZATION:']
 };
 function compactZh(value) {
   return String(value).replace(/([\p{Script=Han}])\s+(?=[\d(（])/gu, '$1')
@@ -105,15 +106,15 @@ const nerfThoughts = [
   ['我们想为其他选择留出一点空间，并会继续观察它的表现。', 'We want to leave a little room for other options, and we’ll keep watching how it performs.']
 ];
 const wordBanks = {
-  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去 2 点生命。获得 1 点力量。', 'Lose 2 HP. Gain 1 Strength.'], ['造成 13(17) 点伤害。每有一张已消耗的牌，伤害增加 2 点。', 'Deal 13(17) damage. Deal 2 additional damage for each Exhausted card.'], ['获得 9(12) 点格挡。若本回合失去过生命，抽 1 张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
-  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影换位', 'Shadow Step']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下个回合将 1 张小刀加入你的手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。丢弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
+  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去 2 点生命。获得 1(2) 点力量。', 'Lose 2 HP. Gain 1(2) Strength.'], ['造成 13(17) 点伤害。每有一张已消耗的牌，伤害增加 2 点。', 'Deal 13(17) damage. Deal 2 additional damage for each Exhausted card.'], ['获得 9(12) 点格挡。若本回合失去过生命，抽 1 张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
+  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影佯攻', 'Umbral Feint']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下个回合将 1 张小刀加入你的手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。丢弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
   Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']], effects: [['获得 2(3) 点辉星。你下一张攻击牌造成的伤害增加 4 点。', 'Gain 2(3) Stars. Your next Attack deals 4 additional damage.'], ['造成 10(14) 点伤害。若你拥有辉星，获得 5 点格挡。', 'Deal 10(14) damage. If you have Stars, gain 5 Block.'], ['获得 7(10) 点格挡。下个回合开始时获得 1 点辉星。', 'Gain 7(10) Block. At the start of your next turn, gain 1 Star.']] },
-  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['葬歌', 'Dirge']], effects: [['造成 8(11) 点伤害。奥斯提的最大生命值增加 3(4) 点。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['奥斯提失去 4 点生命值。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2 张牌。若奥斯提存活，再获得 1 点能量。消耗。', 'Draw 2 cards. If Osty is alive, gain 1 Energy. Exhaust.']] },
+  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['墓园圣歌', 'Grave Canticle']], effects: [['造成 8(11) 点伤害。奥斯提的最大生命值增加 3(4) 点。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['奥斯提失去 4 点生命值。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2(3) 张牌。若奥斯提存活，再获得 1 点能量。消耗。', 'Draw 2(3) cards. If Osty is alive, gain 1 Energy. Exhaust.']] },
   Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']], effects: [['造成 9(12) 点伤害。生成 1 个闪电充能球。', 'Deal 9(12) damage. Channel 1 Lightning Orb.'], ['获得 8(11) 点格挡。若你本回合激发过充能球，抽 1 张牌。', 'Gain 8(11) Block. If you Evoked an Orb this turn, draw 1 card.'], ['获得 1(2) 点集中。下个回合开始时失去 1 点集中。', 'Gain 1(2) Focus. At the start of your next turn, lose 1 Focus.']] },
-  Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3 张随机无色牌中选择 1 张加入手牌。本回合它的耗能为 0。消耗。', 'Choose 1 of 3 random Colorless cards to add to your hand. It costs 0 this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
+  Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3(4) 张随机无色牌中选择 1 张加入手牌。本回合可以免费打出。消耗。', 'Choose 1 of 3(4) random Colorless cards to add to your hand. It is free to play this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
 };
 const ancientReferences = [
-  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', stat: ['金币', 'Gold'], base: 888, benefit: true },
+  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', stat: ['金币', 'Gold'], base: 999, direction: -1, benefit: true },
   { name: 'Regalite', zh: '君王矿石', stat: ['格挡', 'Block'], base: 4, benefit: true },
   { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', stat: ['最大生命损失', 'Max HP loss'], base: 2, benefit: false },
   { name: "Pael's Relax", zh: '佩尔的放松', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
@@ -128,15 +129,32 @@ const generalChanges = [
 ];
 const enemyChanges = [
   {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)'},
-  {name:['巨斧机器人','Axebot'], move:['连环击','The One-Two'], kind:'damage', old:'10(11)×2', next:'11(12)×2'},
+  {name:['巨斧机器人','Axebot'], move:['两连击','The One-Two'], kind:'damage', old:'10(11)×2', next:'11(12)×2'},
   {name:['外骨骼虫','Exoskeleton'], kind:'hp', old:'24-28(26-30)', next:'24-28(28-32)', ascension:8},
   {name:['电球头','Globe Head'], kind:'galvanic', old:'6(8)', next:'6(9)', ascension:9},
   {name:['虱虫之祖','Louse Progenitor'], kind:'strength', old:'5(7)', next:'5(8)', ascension:9},
-  {name:['灵魂异鱼','Soul Fysh'], move:['泄气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)'},
+  {name:['灵魂异鱼','Soul Fysh'], move:['排气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)'},
   {name:['蜂群术士','Entomancer'], kind:'hp', old:'145(165)', next:'150(170)'},
-  {name:['巨斧机器人','Axebot'], move:['磨砺','Sharpen'], kind:'intent', text:['“磨砺”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
-  {name:['虱虫之祖','Louse Progenitor'], move:['蜷缩成长','Curl and Grow'], kind:'intent', text:['“蜷缩成长”不再获得格挡，意图由防御＋增益改为增益。','Curl and Grow no longer gains Block, changing its intent from Defend + Buff to Buff.']},
+  {name:['巨斧机器人','Axebot'], move:['打磨','Sharpen'], kind:'intent', text:['“打磨”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
+  {name:['虱虫之祖','Louse Progenitor'], move:['蜷身成长','Curl and Grow'], kind:'intent', text:['“蜷身成长”不再获得格挡，意图由防御＋增益改为增益。','Curl and Grow no longer gains Block, changing its intent from Defend + Buff to Buff.']},
   {name:['灵魂异鱼','Soul Fysh'], move:['凝视','Gaze'], kind:'intent', text:['“凝视”现在会造成少量伤害，意图由负面效果改为攻击＋负面效果。','Gaze now deals a small amount of damage, changing its intent from Debuff to Attack + Debuff.']}
+];
+const relicChanges = [
+  ['加强了小邮箱：休息时获得的随机药水数量从2瓶提升至3瓶。', 'Buffed Tiny Mailbox: random potions gained when Resting increased from 2 → 3.'],
+  ['改动了弹珠袋：稀有度从普通改为罕见。', 'Changed Bag of Marbles: rarity moved from Common → Uncommon.'],
+  ['改动了摆动球：额外回合现在也计入抽牌的回合计数。', 'Changed Pendulum: extra turns now count toward its card draw timer.'],
+  ['加强了永冻冰晶：在战斗中首次打出能力牌时获得的格挡略微增加。', 'Buffed Permafrost: slightly increased the Block gained from the first Power played in combat.']
+];
+const eventChanges = [
+  ['加强了蘑菇饥渴事件：“芳香蘑菇”选项升级的卡牌数量从2张提升至3张。', 'Buffed Hungry for Mushrooms: the Fragrant Mushroom option now upgrades 3 cards instead of 2.'],
+  ['改动了欢迎来到旺购百货事件：“旺购的神秘盲盒”现在也会在精英战斗后推进计数。', "Changed Welcome to Wongo's: the Mystery Box now also progresses after Elite fights."],
+  ['改动了打造时间事件：“混沌”选项生成的牌现在会更明确地标明本回合可以免费打出。', 'Changed Tinker Time: cards created by the Chaos option now more clearly indicate that they are free to play this turn.']
+];
+const writingLines = [
+  ['统一了部分临时免费打出效果的描述，以便与“本回合耗能变为0”区分。', 'Clarified several temporary free-to-play descriptions to distinguish them from setting a card’s cost to 0 for the turn.'],
+  ['调整了部分升级后卡牌描述中的换行位置。', 'Adjusted line breaks in some upgraded card descriptions.'],
+  ['修正了部分敌人意图说明中的中文标点。', 'Corrected Chinese punctuation in a few enemy intent descriptions.'],
+  ['更新了部分遗物的悬停说明，使触发时机更明确。', 'Updated a few relic tooltips to clarify when their effects trigger.']
 ];
 const bugs = [
   [['修复了在多人游戏中，一名玩家打出来自另一名角色的牌，同时队友结束回合时，某些效果偶尔会结算两次的问题。', 'Fixed some effects occasionally resolving twice in multiplayer when a player used another character’s card as a teammate ended their turn.']],
@@ -224,29 +242,50 @@ function changeCard(card) {
     next: valuePair(nextBase, nextUp), benefit, thought: Math.random() < .23 ?
       pick(benefit ? (thoughts[variable.kind] || thoughts.default) : nerfThoughts) : null };
 }
+function hasIndependentUpgradeBenefit(card) {
+  if (Number.isInteger(card.cost) && Number.isInteger(card.upCost) && card.upCost < card.cost) return true;
+  return candidateVars(card).some(variable =>
+    beneficialDirection(card, variable) * (variable.up - variable.base) > 0);
+}
+function keywordOptions(card) {
+  const baseExhausts = card.keywords.includes('Exhaust');
+  const upgradedExhausts = card.upKeywords.includes('Exhaust');
+  const options = [];
+  if (baseExhausts && upgradedExhausts) {
+    options.push({scope:'both', exhaust:false}, {scope:'upgraded', exhaust:false});
+  } else if (!baseExhausts && !upgradedExhausts) {
+    options.push({scope:'both', exhaust:true});
+  } else if (baseExhausts && !upgradedExhausts && hasIndependentUpgradeBenefit(card)) {
+    options.push({scope:'both', exhaust:false}, {scope:'upgraded', exhaust:true});
+  }
+  return options;
+}
 function changeKeyword(card) {
-  const hasExhaust = card.keywords.includes('Exhaust');
-  const upgradedHasExhaust = card.upKeywords.includes('Exhaust');
-  const upgradedOnly = Math.random() < .43;
-  const old = upgradedOnly ? upgradedHasExhaust : hasExhaust;
-  const text = old
-    ? (upgradedOnly ? ['升级后不再消耗。', 'The upgraded version no longer Exhausts.'] : ['不再消耗。', 'No longer Exhausts.'])
-    : (upgradedOnly ? ['升级后改为消耗。', 'The upgraded version now Exhausts.'] : ['现在会消耗。', 'Now Exhausts.']);
-  const thought = old ?
-    (upgradedOnly ? ['我们希望升级后的牌在多回合战斗中有更明确的价值，但仍要付出抽到它的机会成本。', 'We want the upgraded card to offer a clearer payoff in longer fights while still costing a draw.'] :
-      ['移除消耗后，这张牌应该能在较长的战斗中找到更稳定的用途。', 'Removing Exhaust should give this card a steadier role in longer fights.']) :
-    ['这张牌在反复打出时收益过高。让它消耗应该能保留爆发回合，同时减少循环中的压力。', 'Repeated plays were paying off too much. Exhaust should keep the burst turn while easing the pressure in loops.'];
-  return {kind:'keyword', card, text, thought: Math.random() < .35 ? thought : null};
+  const options = keywordOptions(card);
+  if (!options.length) return null;
+  const choice = pick(options);
+  const upgradedOnly = choice.scope === 'upgraded';
+  const text = choice.exhaust
+    ? (upgradedOnly ? ['升级后改为消耗。', 'The upgraded version now Exhausts.'] : ['现在拥有消耗词条。', 'Now Exhausts.'])
+    : (upgradedOnly ? ['升级后不再消耗。', 'The upgrade now removes Exhaust.'] : ['不再消耗。', 'No longer Exhausts.']);
+  const thought = choice.exhaust
+    ? (upgradedOnly ? ['升级仍保留更高的数值，这次仅收回移除消耗的额外收益。', 'The upgrade keeps its higher numbers; this only removes the additional benefit of losing Exhaust.'] :
+      ['这张牌在反复打出时收益过高。让它消耗应该能保留爆发回合，同时减少循环中的压力。', 'Repeated plays were paying off too much. Exhaust should keep the burst turn while easing the pressure in loops.'])
+    : (upgradedOnly ? ['移除升级后的消耗词条，应该能让升级的收益更明确。', 'Removing Exhaust from the upgrade should make its benefit clearer.'] :
+      ['移除消耗后，这张牌应该能在较长的战斗中找到更稳定的用途。', 'Removing Exhaust should give this card a steadier role in longer fights.']);
+  return {kind:'keyword', card, scope:choice.scope, exhaust:choice.exhaust,
+    text, thought: Math.random() < .35 ? thought : null};
 }
 function changeUpgrade(card) {
-  const vars = candidateVars(card);
+  const vars = candidateVars(card).filter(variable =>
+    beneficialDirection(card, variable) * (variable.up - variable.base) >= 0);
   if (vars.length && Math.random() < .7) {
     const variable = pick(vars);
     const direction = beneficialDirection(card, variable);
     const next = numericStep(variable.up, direction, variable.kind);
     if (next !== variable.up) {
       const label = variableLabel(card, variable);
-      return {kind:'upgrade', card, label, old:String(variable.up), next:String(next),
+      return {kind:'upgrade', card, variable, label, old:String(variable.up), next:String(next),
         thought: pick([
           ['此前升级这张牌的收益不够明显。我们希望这次调整能让升级成为一个更有竞争力的选择。', 'The upgrade was not offering enough. We want this to make upgrading the card a more competitive choice.'],
           ['未升级时已经足够实用，所以这次只调整升级效果。', 'The base card is doing its job, so this pass only changes the upgraded effect.']
@@ -262,19 +301,42 @@ function changeBaseOnly(card) {
   const vars = candidateVars(card);
   if (!vars.length) return null;
   const variable = pick(vars);
-  const next = numericStep(variable.base, beneficialDirection(card, variable), variable.kind);
-  if (next === variable.base) return null;
-  return {kind:'baseOnly', card, label: variableLabel(card, variable),
+  const polarity = beneficialDirection(card, variable);
+  const next = numericStep(variable.base, polarity, variable.kind);
+  if (next === variable.base || polarity * (variable.up - next) <= 0) return null;
+  return {kind:'baseOnly', card, variable, label: variableLabel(card, variable),
     old:String(variable.base), next:String(next),
     thought:['未升级时的表现落后于升级后，因此这次只调整基础数值。', 'The base card was lagging behind its upgrade, so this change only adjusts the unupgraded value.']};
 }
+function changeCost(card) {
+  if (!Number.isInteger(card.cost) || !Number.isInteger(card.upCost) ||
+      card.cost < 0 || card.upCost < 0 || card.cost > 5 || card.upCost > 5) return null;
+  const lower = Math.random() < .65;
+  if (lower && (card.cost === 0 || card.upCost === 0)) return null;
+  if (!lower && (card.cost === 5 || card.upCost === 5)) return null;
+  const delta = lower ? -1 : 1;
+  return {kind:'cost', card, old:valuePair(card.cost, card.upCost),
+    next:valuePair(card.cost + delta, card.upCost + delta), benefit:lower};
+}
+function changeRarity(card) {
+  if (!['Common', 'Uncommon'].includes(card.rarity)) return null;
+  const moreCommon = card.rarity === 'Uncommon';
+  return {kind:'rarity', card,
+    old:moreCommon ? ['罕见','Uncommon'] : ['普通','Common'],
+    next:moreCommon ? ['普通','Common'] : ['罕见','Uncommon'],
+    thought:moreCommon ?
+      ['我们想让这张牌更常成为构筑的起点，再观察它对牌池的影响。', 'We want this card to be a more common starting point for builds and will watch its effect on the pool.'] :
+      ['这张牌在普通牌池中的出现频率偏高，因此先调整稀有度。', 'This card appeared a little too often in the Common pool, so we are adjusting its rarity first.']};
+}
 function changeDiverse(card) {
-  const choices = ['number', 'number', 'number', 'upgrade', 'baseOnly'];
+  const choices = ['number', 'number', 'number', 'upgrade', 'baseOnly', 'cost', 'rarity'];
   if (card.type === 'Attack' || card.type === 'Skill') choices.push('keyword');
   const kind = pick(choices);
   return kind === 'keyword' ? changeKeyword(card) :
     kind === 'upgrade' ? (changeUpgrade(card) || changeCard(card)) :
-    kind === 'baseOnly' ? (changeBaseOnly(card) || changeCard(card)) : changeCard(card);
+    kind === 'baseOnly' ? (changeBaseOnly(card) || changeCard(card)) :
+    kind === 'cost' ? (changeCost(card) || changeCard(card)) :
+    kind === 'rarity' ? (changeRarity(card) || changeCard(card)) : changeCard(card);
 }
 function cleanDescription(template, card, lang) {
   const variables = Object.fromEntries(card.vars.map(v => [v.id, v]));
@@ -313,9 +375,11 @@ function makeRework(card) {
       ['这是一次幅度较大的实验，欢迎告诉我们它在实战中的表现。', 'This is a larger experiment; please let us know how it plays in real runs.']
     ]) };
 }
-function makeNew(pool) {
+function makeNew(pool, existingEntries = []) {
   const bank = wordBanks[pool];
-  const index = rand(0, bank.names.length - 1);
+  const available = bank.names.map((_, index) => index).filter(index =>
+    !existingEntries.some(entry => entry.kind === 'rework' && entry.next === bank.effects[index]));
+  const index = pick(available);
   return { kind: 'new', pool, name: bank.names[index], effect: bank.effects[index],
     thought: pick(pool === 'Colorless' ? [
       ['我们想让无色牌为不同牌组提供一种新的选择。', 'We wanted this Colorless card to offer a new option across different decks.'],
@@ -362,10 +426,10 @@ function generatePatch() {
   if (reworkCard) { entries[reworkPool].splice(rand(0, entries[reworkPool].length), 0, makeRework(reworkCard)); used.add(reworkCard.en); }
   if (Math.random() < .18) {
     const newPool = pick(pools);
-    entries[newPool].push(makeNew(newPool));
+    entries[newPool].push(makeNew(newPool, entries[newPool]));
     if (Math.random() < .08) {
       const secondPool = pick(pools.filter(p => p !== newPool));
-      entries[secondPool].push(makeNew(secondPool));
+      entries[secondPool].push(makeNew(secondPool, entries[secondPool]));
     }
   }
   if (Math.random() < .34) {
@@ -375,7 +439,7 @@ function generatePatch() {
       thought: ['这张牌目前与该角色的其他选择过于相似。我们会观察移除后牌池的表现。', 'This card currently overlaps too much with other options for this character. We’ll watch how the pool feels without it.'] });
   }
   const ancients = shuffle(ancientReferences).slice(0, rand(1, 2)).map(item => {
-    const direction = Math.random() < .65 ? (item.benefit ? 1 : -1) : (item.benefit ? -1 : 1);
+    const direction = item.direction || (Math.random() < .65 ? (item.benefit ? 1 : -1) : (item.benefit ? -1 : 1));
     const next = numericStep(item.base, direction, item.stat[1]);
     return { ...item, old: valuePair(item.base, item.up || item.base),
       next: valuePair(next, item.up ? item.up + next - item.base : next),
@@ -385,6 +449,9 @@ function generatePatch() {
   patch = { intro: pick(intros), bridge: pick(bridges), ending: pick(endings), entries, ancients,
     general: Math.random() < .8 ? shuffle(generalChanges).slice(0, rand(1, 2)) : [],
     enemies: shuffle(enemyChanges).slice(0, rand(2, 4)),
+    relics: Math.random() < .56 ? shuffle(relicChanges).slice(0, rand(1, 2)) : [],
+    events: Math.random() < .46 ? shuffle(eventChanges).slice(0, 1) : [],
+    writing: Math.random() < .62 ? shuffle(writingLines).slice(0, rand(1, 2)) : [],
     ux: shuffle(uxLines).slice(0, rand(3, 5)), bugs: shuffle(bugs).slice(0, rand(6, 9)),
     modding: shuffle(modLines).slice(0, rand(2, 4)), likes: rand(420, 2700), comments: rand(55, 430) };
   liked = false;
@@ -406,10 +473,20 @@ function lineFor(entry) {
       escapeHtml(tr(entry.old)) + (language === 'zh' ? '”改为“' : '” → “') + escapeHtml(tr(entry.next)) + '”</li>' + thoughtFor(entry);
   if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整<strong>' : 'Changed <strong>') +
     name + (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
+  if (entry.kind === 'rarity') return '<li>' + (language === 'zh' ? '改动了<strong>' : 'Changed <strong>') +
+    name + (language === 'zh' ? '</strong>：稀有度从' : '</strong>: rarity moved from ') +
+    escapeHtml(tr(entry.old)) + (language === 'zh' ? '改为' : ' → ') +
+    escapeHtml(tr(entry.next)) + (language === 'zh' ? '。</li>' : '.</li>') + thoughtFor(entry);
+  if (entry.kind === 'cost') {
+    const verb = language === 'zh' ? (entry.benefit ? '加强了' : '削弱了') : (entry.benefit ? 'Buffed' : 'Nerfed');
+    return '<li>' + verb + (language === 'zh' ? '<strong>' : ' <strong>') + name +
+      (language === 'zh' ? '</strong>：费用从' : '</strong>: cost changed from ') + entry.old +
+      (language === 'zh' ? changeDirection(entry.old, entry.next) : ' → ') + entry.next + '</li>' + thoughtFor(entry);
+  }
   if (['upgrade','upgradeCost','baseOnly'].includes(entry.kind)) {
-    const label = entry.kind === 'upgradeCost' ? ['耗能','cost'] : entry.label;
+    const label = entry.kind === 'upgradeCost' ? ['费用','cost'] : entry.label;
     if (language === 'zh') {
-      const subject = (entry.kind === 'baseOnly' ? '基础' : '升级效果的') + tr(label);
+      const subject = (entry.kind === 'baseOnly' ? '基础' : '升级后的') + tr(label);
       return '<li>加强了<strong>' + name + '</strong>：' + escapeHtml(subject) + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next + '</li>' + thoughtFor(entry);
     }
     const prefix = entry.kind === 'baseOnly' ? 'unupgraded' : 'upgraded';
@@ -470,6 +547,9 @@ function render() {
     html += patch.entries[pool].map(lineFor).join('');
     html += '</ul>';
   }
+  if (patch.relics.length) html += '<h3>' + tr(ui.relics) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.relics);
+  if (patch.events.length) html += '<h3>' + tr(ui.events) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.events);
+  if (patch.writing.length) html += '<h2>' + tr(ui.writing) + '</h2>' + list(patch.writing);
   html += '<h2>' + tr(ui.ux) + '</h2><h3>' + tr(ui.general) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.ux);
   html += '<h2>' + tr(ui.bugs) + '</h2>' + list(patch.bugs.map(x => x[0]));
   html += '<h2>' + tr(ui.modding) + '</h2>' + list(patch.modding);
