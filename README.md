@@ -8,14 +8,16 @@
 
 ## GitHub Pages
 
-此仓库已经把 `index.html`、`style.css`、`app.js`、`cards.json` 放在根目录，并包含 `.nojekyll`。在 GitHub 仓库的 **Settings → Pages** 中选择 **Deploy from a branch**、**main**、**/(root)**，保存后即可发布。无需 GitHub Actions。资源均为相对路径，支持项目子路径 `https://mewcodex.github.io/NextSTS2Update/`。
+此仓库已经把 `index.html`、`style.css`、`app.js`、`cards.json` 和截图组件放在根目录，并包含 `.nojekyll`。在 GitHub 仓库的 **Settings → Pages** 中选择 **Deploy from a branch**、**main**、**/(root)**，保存后即可发布。无需 GitHub Actions。资源均为相对路径，支持项目子路径 `https://mewcodex.github.io/NextSTS2Update/`。
 
 ## 数据和生成规则
 
-- `cards.json` 从同一工作区的 `chaos/ChaosCardGenerator/Data/native_reference_cards.json` 提取，只保留角色和无色卡池中在图鉴显示的卡牌，共 463 张。`build_cards.py` 可在源目录更新后重新提取。
+- `cards.json` 从同一工作区的 `chaos/ChaosCardGenerator/Data/native_reference_cards.json` 提取，收录该 v111 原生参考资料中的全部 567 张牌，其中包含完整的 482 张角色及无色常规卡牌（含基础牌）。资料明确不含仅限多人游戏使用的卡牌和测试牌。`build_cards.py` 可在源目录更新后重新提取。
 - 普通调整以原始和升级数值为基础；三位重复数字按 111 递增或递减，整百数字按百位调整。
-- 重做、新卡名称和效果、开场语、设计说明、界面项、虚构修复项和模组项都由独立的双语词库组合。
+- 升级／未升级版本、消耗关键词、敌人进阶数值及意图、整体规则、重做、新卡名称和效果、开场语、设计说明、界面项、虚构修复项和模组项都由独立的双语词库组合。新增卡牌约每六次公告出现一次。
+- “下载截图”只导出公告正文，采用适合阅读的窄边距，保留虚构公告声明。截图在浏览器本地生成，不上传。
 - 公告层级与语气参考了 [Steam 上 v0.100.0 至 v0.111.0 的 Beta 更新日志](https://store.steampowered.com/news/app/2868840)。这不是官方公告。
 
 所有页面内容仅供娱乐。Steam 和 Slay the Spire 2 名称属于各自权利人。
 页面使用 `ST3AM` 戏仿标识；横幅与游戏封面由官方图片 CDN 加载，断网时仍可使用公告生成器。
+截图功能使用本地附带的 [html2canvas](https://html2canvas.hertzen.com/)（MIT 许可，见 `html2canvas-LICENSE.txt`）。

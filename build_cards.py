@@ -10,11 +10,7 @@ POOLS = {"Ironclad", "Silent", "Defect", "Regent", "Necrobinder", "Colorless"}
 source = json.loads(SOURCE.read_text(encoding="utf-8"))
 cards = []
 for card in source["Cards"]:
-    if card["Pool"] not in POOLS or not card.get("ShouldShowInLibrary"):
-        continue
     base = card["Base"]
-    if base["Rarity"] in {"Basic", "Special", "None"}:
-        continue
     upgrade = (card.get("Upgrade") or {}).get("Result") or {}
     variables = []
     for variable in base.get("Variables") or []:
@@ -32,9 +28,13 @@ for card in source["Cards"]:
     cards.append({
         "pool": card["Pool"], "en": card["Title"]["en"], "zh": card["Title"]["zhHans"],
         "type": base["Type"], "rarity": base["Rarity"],
+        "library": bool(card.get("ShouldShowInLibrary")),
+        "regularPool": card["Pool"] in POOLS,
         "cost": base["EnergyCost"], "upCost": upgrade.get("EnergyCost", base["EnergyCost"]),
+        "keywords": base.get("Keywords") or [],
+        "upKeywords": upgrade.get("Keywords", base.get("Keywords") or []),
         "descEn": card["DescriptionTemplate"]["en"], "descZh": card["DescriptionTemplate"]["zhHans"],
         "vars": variables,
     })
 DEST.write_text(json.dumps(cards, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-print(f"Wrote {len(cards)} playable cards to {DEST}")
+print(f"Wrote {len(cards)} native reference cards to {DEST}")

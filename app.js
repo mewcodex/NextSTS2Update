@@ -24,11 +24,11 @@ const ui = {
   dateLabel: ['发布于', 'POSTED'], typeLabel: ['类型', 'TYPE'],
   controls: ['再来一次？', 'ANOTHER ONE?'],
   sideNote: ['娱乐网站。所有生成内容均非官方更新。', 'For entertainment. Every generated change is fictional.'],
-  like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['分享', 'Share'],
-  dislike: ['踩', 'Dislike'], copied: ['已复制', 'Copied'],
+  like: ['赞', 'Like'], comment: ['讨论', 'Discuss'], share: ['下载截图', 'Download image'],
+  dislike: ['踩', 'Dislike'], copied: ['已保存', 'Saved'],
   content: ['内容与平衡：', 'CONTENT & BALANCE:'], ux: ['用户体验与界面：', 'USER EXPERIENCE & INTERFACE:'],
   bugs: ['错误修复：', 'BUG FIXES:'], modding: ['模组开发：', 'MODDING:'],
-  general: ['一般', 'General'], multiplayer: ['多人游戏', 'Multiplayer']
+  general: ['通用', 'General'], enemies: ['敌人', 'Enemies'], multiplayer: ['多人游戏', 'Multiplayer']
 };
 const tr = pair => pair[language === 'zh' ? 0 : 1];
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
@@ -63,7 +63,7 @@ const endings = [
 const labels = {
   Damage: ['伤害', 'damage'], CalculatedDamage: ['伤害', 'damage'], ExtraDamage: ['额外伤害', 'bonus damage'],
   Block: ['格挡', 'Block'], ExtraBlock: ['额外格挡', 'bonus Block'],
-  Cards: ['数量', 'card count'], Draw: ['抽牌数', 'cards drawn'], Gold: ['金币', 'Gold'],
+  Cards: ['卡牌数量', 'card count'], Draw: ['抽牌数', 'cards drawn'], Gold: ['金币', 'Gold'],
   Energy: ['能量', 'Energy'], HpLoss: ['生命损失', 'HP loss'], Heal: ['回复量', 'healing'],
   PoisonPower: ['中毒', 'Poison'], VulnerablePower: ['易伤', 'Vulnerable'],
   WeakPower: ['虚弱', 'Weak'], StrengthPower: ['力量', 'Strength'],
@@ -108,10 +108,30 @@ const wordBanks = {
   Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3 张随机无色牌中选择 1 张加入手牌。本回合它的耗能为 0。消耗。', 'Choose 1 of 3 random Colorless cards to add to your hand. It costs 0 this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
 };
 const ancientReferences = [
-  { name: "Nonupeipe's Signet Ring", zh: 'Nonupeipe 的图章戒指', stat: ['金币', 'Gold'], base: 888, benefit: true },
-  { name: 'Regalite', zh: 'Regalite', stat: ['格挡', 'Block'], base: 4, benefit: true },
-  { name: "Tezcatara's Brightest Flame", zh: 'Tezcatara 的至亮之焰', stat: ['最大生命损失', 'Max HP loss'], base: 2, benefit: false },
-  { name: "Pael's Relax", zh: 'Pael 的休憩', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
+  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', stat: ['金币', 'Gold'], base: 888, benefit: true },
+  { name: 'Regalite', zh: '君王矿石', stat: ['格挡', 'Block'], base: 4, benefit: true },
+  { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', stat: ['最大生命损失', 'Max HP loss'], base: 2, benefit: false },
+  { name: "Pael's Relax", zh: '佩尔的放松', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
+];
+const generalChanges = [
+  ['进阶 6 的“通货膨胀”现在使商人移除卡牌的初始费用由 100 金币提高至 125 金币。', 'Ascension 6 Inflation now raises the initial merchant card removal cost from 100 to 125 Gold.'],
+  ['进阶 6 的“通货膨胀”现在使商人移除卡牌的费用每次增长 25 金币，而非 50 金币。', 'Ascension 6 Inflation now increases the merchant card removal cost by 25 Gold each time instead of 50.'],
+  ['地图上现在会略微增加休息处的出现机会。', 'Rest Sites now appear slightly more often on the map.'],
+  ['地图上现在会略微减少问号房间的出现机会。', 'Unknown rooms now appear slightly less often on the map.'],
+  ['商店中的遗物现在更少出现重复的稀有度组合。', 'Relics at the merchant now show repeated rarity combinations less often.'],
+  ['遭遇精英战斗后的卡牌奖励现在更有机会出现稀有卡牌。', 'Card rewards after Elite fights now have a slightly higher chance to contain Rare cards.']
+];
+const enemyChanges = [
+  {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)', tier:['低/高进阶','low/high Ascension']},
+  {name:['巨斧机器人','Axebot'], move:['连环击','The One-Two'], kind:'damage', old:'10(11) × 2', next:'11(12) × 2', tier:['低/高进阶','low/high Ascension']},
+  {name:['外骨骼虫','Exoskeleton'], kind:'hp', old:'24–28(26–30)', next:'24–28(28–32)', tier:['低/高进阶','low/high Ascension']},
+  {name:['电球头','Globe Head'], kind:'galvanic', old:'6(8)', next:'6(9)', tier:['低/高进阶','low/high Ascension']},
+  {name:['虱虫之祖','Louse Progenitor'], kind:'strength', old:'5(7)', next:'5(8)', tier:['低/高进阶','low/high Ascension']},
+  {name:['灵魂异鱼','Soul Fysh'], move:['泄气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)', tier:['低/高进阶','low/high Ascension']},
+  {name:['蜂群术士','Entomancer'], kind:'hp', old:'145(165)', next:'150(170)', tier:['低/高进阶','low/high Ascension']},
+  {name:['巨斧机器人','Axebot'], move:['磨砺','Sharpen'], kind:'intent', text:['“磨砺”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
+  {name:['虱虫之祖','Louse Progenitor'], move:['蜷缩成长','Curl and Grow'], kind:'intent', text:['“蜷缩成长”不再获得格挡，意图由防御＋增益改为增益。','Curl and Grow no longer gains Block, changing its intent from Defend + Buff to Buff.']},
+  {name:['灵魂异鱼','Soul Fysh'], move:['凝视','Gaze'], kind:'intent', text:['“凝视”现在会造成少量伤害，意图由负面效果改为攻击＋负面效果。','Gaze now deals a small amount of damage, changing its intent from Debuff to Attack + Debuff.']}
 ];
 const bugs = [
   [['修复了在多人游戏中，一名玩家打出来自另一名角色的牌，同时队友结束回合时，某些效果偶尔会结算两次的问题。', 'Fixed some effects occasionally resolving twice in multiplayer when a player used another character’s card as a teammate ended their turn.']],
@@ -156,7 +176,15 @@ function candidateVars(card) {
   return card.vars.filter(v => v.base > 0 && v.base < 10000 && v.base !== null &&
     !['CalculationBase', 'CalculatedDamage'].includes(v.kind) &&
     (card.descEn.includes('{' + v.id + ':') || card.descZh.includes('{' + v.id + ':')) &&
-    Boolean(labels[v.id] || labels[v.kind]) && !/^(If|Condition|Chance)/.test(v.id));
+    Boolean(labels[v.id] || labels[v.kind]) && !/^(If|Condition|Chance)/.test(v.id) &&
+    !(v.id === 'Cards' && /(?:大于等于|at least)\s*\{Cards:/i.test(card.descZh + card.descEn)));
+}
+function variableLabel(card, variable) {
+  if (variable.id === 'Cards') {
+    if (/(?:抽|Draw)\s*\{Cards:/i.test(card.descZh + card.descEn)) return ['抽牌数', 'cards drawn'];
+    if (/(?:丢弃|Discard)\s*\{Cards:/i.test(card.descZh + card.descEn)) return ['弃牌数', 'cards discarded'];
+  }
+  return labels[variable.id] || labels[variable.kind];
 }
 function changeCard(card) {
   const vars = candidateVars(card);
@@ -167,11 +195,63 @@ function changeCard(card) {
   if (nextBase === variable.base) return null;
   const delta = nextBase - variable.base;
   const nextUp = Math.max(1, variable.up + delta);
-  const label = labels[variable.id] || labels[variable.kind] || [variable.id.replace(/([a-z])([A-Z])/g, '$1 $2'), variable.id.replace(/([a-z])([A-Z])/g, '$1 $2')];
+  const label = variableLabel(card, variable) || [variable.id.replace(/([a-z])([A-Z])/g, '$1 $2'), variable.id.replace(/([a-z])([A-Z])/g, '$1 $2')];
   const benefit = variable.kind === 'HpLoss' ? direction < 0 : direction > 0;
   return { kind: 'number', card, variable, label, old: valuePair(variable.base, variable.up),
     next: valuePair(nextBase, nextUp), benefit, thought: Math.random() < .23 ?
       pick(benefit ? (thoughts[variable.kind] || thoughts.default) : nerfThoughts) : null };
+}
+function changeKeyword(card) {
+  const hasExhaust = card.keywords.includes('Exhaust');
+  const upgradedHasExhaust = card.upKeywords.includes('Exhaust');
+  const upgradedOnly = Math.random() < .43;
+  const old = upgradedOnly ? upgradedHasExhaust : hasExhaust;
+  const text = old
+    ? (upgradedOnly ? ['升级后不再消耗。', 'The upgraded version no longer Exhausts.'] : ['不再消耗。', 'No longer Exhausts.'])
+    : (upgradedOnly ? ['升级后改为消耗。', 'The upgraded version now Exhausts.'] : ['现在会消耗。', 'Now Exhausts.']);
+  const thought = old ?
+    (upgradedOnly ? ['我们希望升级后的牌在多回合战斗中有更明确的价值，但仍要付出抽到它的机会成本。', 'We want the upgraded card to offer a clearer payoff in longer fights while still costing a draw.'] :
+      ['移除消耗后，这张牌应该能在较长的战斗中找到更稳定的用途。', 'Removing Exhaust should give this card a steadier role in longer fights.']) :
+    ['这张牌在反复打出时收益过高。让它消耗应该能保留爆发回合，同时减少循环中的压力。', 'Repeated plays were paying off too much. Exhaust should keep the burst turn while easing the pressure in loops.'];
+  return {kind:'keyword', card, text, thought: Math.random() < .35 ? thought : null};
+}
+function changeUpgrade(card) {
+  const vars = candidateVars(card);
+  if (vars.length && Math.random() < .7) {
+    const variable = pick(vars);
+    const direction = variable.kind === 'HpLoss' ? -1 : 1;
+    const next = numericStep(variable.up, direction, variable.kind);
+    if (next !== variable.up) {
+      const label = variableLabel(card, variable);
+      return {kind:'upgrade', card, label, old:String(variable.up), next:String(next),
+        thought: pick([
+          ['此前升级这张牌的收益不够明显。我们希望这次调整能让升级成为一个更有竞争力的选择。', 'The upgrade was not offering enough. We want this to make upgrading the card a more competitive choice.'],
+          ['基础版本在当前强度下已经能发挥作用，因此这次只调整升级后的效果。', 'The base card is doing its job, so this pass only changes the upgraded effect.']
+        ])};
+    }
+  }
+  if (Number.isInteger(card.upCost) && card.upCost > 0) return {kind:'upgradeCost', card,
+    old:String(card.upCost), next:String(card.upCost-1),
+    thought:['升级后降低耗能应该能让这张牌更容易融入高费用牌组。', 'Lowering the upgraded cost should help this fit into more expensive decks.']};
+  return null;
+}
+function changeBaseOnly(card) {
+  const vars = candidateVars(card);
+  if (!vars.length) return null;
+  const variable = pick(vars);
+  const next = numericStep(variable.base, variable.kind === 'HpLoss' ? -1 : 1, variable.kind);
+  if (next === variable.base) return null;
+  return {kind:'baseOnly', card, label: variableLabel(card, variable),
+    old:String(variable.base), next:String(next),
+    thought:['基础版本的表现落后于升级版本，因此这次只提高未升级时的数值。', 'The base card was lagging behind its upgrade, so this change only raises the unupgraded value.']};
+}
+function changeDiverse(card) {
+  const choices = ['number', 'number', 'number', 'upgrade', 'baseOnly'];
+  if (card.type === 'Attack' || card.type === 'Skill') choices.push('keyword');
+  const kind = pick(choices);
+  return kind === 'keyword' ? changeKeyword(card) :
+    kind === 'upgrade' ? (changeUpgrade(card) || changeCard(card)) :
+    kind === 'baseOnly' ? (changeBaseOnly(card) || changeCard(card)) : changeCard(card);
 }
 function cleanDescription(template, card, lang) {
   const variables = Object.fromEntries(card.vars.map(v => [v.id, v]));
@@ -212,12 +292,14 @@ function generatePatch() {
   const entries = {};
   const used = new Set();
   pools.forEach(pool => {
-    const available = shuffle(catalog.filter(c => c.pool === pool && candidateVars(c).length && c.rarity !== 'Basic'));
+    const available = shuffle(catalog.filter(c => c.pool === pool && c.library &&
+      (['Common','Uncommon','Rare'].includes(c.rarity) || Math.random() < .1 && c.rarity === 'Basic')));
     entries[pool] = [];
+    const target = rand(3, 5);
     for (const card of available) {
-      if (entries[pool].length >= rand(3, 5)) break;
+      if (entries[pool].length >= target) break;
       if (used.has(card.en)) continue;
-      const result = changeCard(card);
+      const result = changeDiverse(card);
       if (result) { entries[pool].push(result); used.add(card.en); }
     }
   });
@@ -227,11 +309,13 @@ function generatePatch() {
     !/[{}]/.test(cleanDescription(c.descEn, c, 'en')) &&
     !/[{}]/.test(cleanDescription(c.descZh, c, 'zh'))));
   if (reworkCard) { entries[reworkPool].splice(rand(0, entries[reworkPool].length), 0, makeRework(reworkCard)); used.add(reworkCard.en); }
-  const newPool = pick(pools);
-  entries[newPool].push(makeNew(newPool));
-  if (Math.random() < .3) {
-    const secondPool = pick(pools.filter(p => p !== newPool));
-    entries[secondPool].push(makeNew(secondPool));
+  if (Math.random() < .18) {
+    const newPool = pick(pools);
+    entries[newPool].push(makeNew(newPool));
+    if (Math.random() < .08) {
+      const secondPool = pick(pools.filter(p => p !== newPool));
+      entries[secondPool].push(makeNew(secondPool));
+    }
   }
   if (Math.random() < .34) {
     const removePool = pick(pools.slice(0, 5));
@@ -247,6 +331,8 @@ function generatePatch() {
       buff: direction * (item.benefit ? 1 : -1) > 0 };
   });
   patch = { intro: pick(intros), bridge: pick(bridges), ending: pick(endings), entries, ancients,
+    general: Math.random() < .8 ? shuffle(generalChanges).slice(0, rand(1, 2)) : [],
+    enemies: shuffle(enemyChanges).slice(0, rand(2, 4)),
     ux: shuffle(uxLines).slice(0, rand(3, 5)), bugs: shuffle(bugs).slice(0, rand(6, 9)),
     modding: shuffle(modLines).slice(0, rand(2, 4)), likes: rand(420, 2700), comments: rand(55, 430) };
   liked = false;
@@ -267,6 +353,15 @@ function lineFor(entry) {
   if (entry.kind === 'rework')
     return '<li>' + (language === 'zh' ? '重做 <strong>' : 'Reworked <strong>') + name + '</strong>: “' +
       escapeHtml(tr(entry.old)) + '” → “' + escapeHtml(tr(entry.next)) + '”</li>' + thoughtFor(entry);
+  if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') +
+    name + '</strong>: ' + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
+  if (['upgrade','upgradeCost','baseOnly'].includes(entry.kind)) {
+    const prefix = entry.kind === 'baseOnly' ? ['未升级版本','unupgraded version'] : ['升级版本','upgraded version'];
+    const label = entry.kind === 'upgradeCost' ? ['耗能','cost'] : entry.label;
+    return '<li>' + (language === 'zh' ? '增强 <strong>' : 'Buffed <strong>') + name + '</strong>: ' +
+      escapeHtml(tr(prefix)) + ' ' + escapeHtml(tr(label)) + ' ' +
+      (language === 'zh' ? '由 ' : 'changed from ') + entry.old + ' → ' + entry.next + '</li>' + thoughtFor(entry);
+  }
   const label = escapeHtml(tr(entry.label));
   const verb = language === 'zh' ? (entry.benefit ? '增强' : '削弱') : (entry.benefit ? 'Buffed' : 'Nerfed');
   const change = language === 'zh' ? label + '从 ' + entry.old + ' → ' + entry.next :
@@ -275,6 +370,17 @@ function lineFor(entry) {
 }
 function thoughtFor(entry) { return entry.thought ? '<li class="thought">' + escapeHtml(tr(entry.thought)) + '</li>' : ''; }
 function list(lines) { return '<ul>' + lines.map(line => '<li>' + escapeHtml(tr(line)) + '</li>').join('') + '</ul>'; }
+function enemyLine(item) {
+  const name = escapeHtml(tr(item.name));
+  if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') + name +
+    '</strong>: ' + escapeHtml(tr(item.text)) + '</li>';
+  const stat = item.kind === 'hp' ? ['生命值', 'HP'] : item.kind === 'strength' ? ['力量增益', 'Strength gain'] :
+    item.kind === 'galvanic' ? ['电流增益', 'Galvanic power'] : ['伤害', 'damage'];
+  const move = item.move ? escapeHtml(tr(item.move)) + ' ' : '';
+  return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') + name + '</strong>: ' +
+    move + escapeHtml(tr(stat)) + (language === 'zh' ? '（低/高进阶）由 ' : ' at low/high Ascension from ') +
+    item.old + ' → ' + item.next + '</li>';
+}
 function render() {
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   document.title = language === 'zh' ? '下一次塔2更新？' : 'Next STS2 Patch?';
@@ -293,11 +399,13 @@ function render() {
   if (!patch) return;
   let html = '<p>' + escapeHtml(tr(patch.intro)) + '</p><p>' + escapeHtml(tr(patch.bridge)) + '</p>';
   html += '<h2>' + tr(ui.content) + '</h2>';
-  html += '<h3>' + (language === 'zh' ? '远古生灵:' : 'Ancients:') + '</h3><ul>';
+  if (patch.general.length) html += '<h3>' + tr(ui.general) + ':</h3>' + list(patch.general);
+  html += '<h3>' + (language === 'zh' ? '先古之民:' : 'Ancients:') + '</h3><ul>';
   html += patch.ancients.map(item => '<li>' + (language === 'zh' ? (item.buff ? '增强 ' : '削弱 ') :
     (item.buff ? 'Buffed ' : 'Nerfed ')) + '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) + '</strong>: ' +
     escapeHtml(tr(item.stat)) + (language === 'zh' ? '从 ' : ' changed from ') + item.old + ' → ' + item.next + '</li>').join('');
   html += '</ul>';
+  html += '<h3>' + tr(ui.enemies) + ':</h3><ul>' + patch.enemies.map(enemyLine).join('') + '</ul>';
   for (const pool of pools) {
     html += '<h3>' + tr(poolNames[pool]) + ':</h3><ul>';
     html += patch.entries[pool].map(lineFor).join('');
@@ -339,11 +447,35 @@ $('comment-button').addEventListener('click', () => {
   $('comment-button').setAttribute('aria-expanded', shown);
 });
 $('share-button').addEventListener('click', async () => {
+  const button = $('share-button');
+  button.disabled = true;
   try {
-    await navigator.clipboard.writeText(window.location.href);
+    const article = $('article-content');
+    const canvas = await html2canvas(article, {
+      backgroundColor: '#292c32', scale: 2, useCORS: true,
+      windowWidth: Math.max(window.innerWidth, 900),
+      onclone: clonedDocument => {
+        const clone = clonedDocument.getElementById('article-content');
+        clone.style.width = '720px';
+        clone.style.padding = '18px 20px 25px';
+        clone.style.background = '#292c32';
+        clone.style.fontSize = '15px';
+        clone.style.lineHeight = '1.42';
+      }
+    });
+    const anchor = document.createElement('a');
+    anchor.download = `Next-STS2-Patch-v0.112.0-${language}.png`;
+    anchor.href = canvas.toDataURL('image/png');
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
     $('share-label').textContent = tr(ui.copied);
-  } catch (_) {
-    $('share-label').textContent = tr(ui.share);
+    setTimeout(() => $('share-label').textContent = tr(ui.share), 2500);
+  } catch (error) {
+    console.error('Image export failed:', error);
+    $('share-label').textContent = language === 'zh' ? '导出失败' : 'Export failed';
+  } finally {
+    button.disabled = false;
   }
 });
 fetch('cards.json').then(response => {
