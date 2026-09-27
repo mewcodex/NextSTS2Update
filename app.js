@@ -674,9 +674,27 @@ $('share-button').addEventListener('click', async () => {
         panel.querySelector('.article-footer').style.padding = '18px 20px 22px';
       }
     });
+    const footerHeight = 76;
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height + footerHeight;
+    const exportContext = exportCanvas.getContext('2d');
+    exportContext.drawImage(canvas, 0, 0);
+    exportContext.fillStyle = '#22262c';
+    exportContext.fillRect(0, canvas.height, canvas.width, footerHeight);
+    exportContext.strokeStyle = '#59616a';
+    exportContext.beginPath();
+    exportContext.moveTo(40, canvas.height + 1);
+    exportContext.lineTo(canvas.width - 40, canvas.height + 1);
+    exportContext.stroke();
+    exportContext.fillStyle = '#9ec9e5';
+    exportContext.font = '24px Arial, sans-serif';
+    exportContext.textAlign = 'center';
+    exportContext.textBaseline = 'middle';
+    exportContext.fillText('https://mewcodex.github.io/NextSTS2Update/', canvas.width / 2, canvas.height + footerHeight / 2);
     const anchor = document.createElement('a');
     anchor.download = `Next-STS2-Patch-v0.112.0-${language}.png`;
-    anchor.href = canvas.toDataURL('image/png');
+    anchor.href = exportCanvas.toDataURL('image/png');
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();

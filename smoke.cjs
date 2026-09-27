@@ -219,6 +219,8 @@ setImmediate(() => {
   assert(relicIds.size > 35 && relicRarities.size === 6, 'Relic updates do not cover the full roster and rarities');
   assert(ancientMoves > 70, 'Ancient option moves are too rare');
   assert(generator.includes("document.querySelector('.news-panel')") && generator.includes("panel.querySelector('.sidebar').style.display = 'none'"), 'Screenshot misses full article or sidebar exclusion');
+  assert(generator.includes("exportContext.fillText('https://mewcodex.github.io/NextSTS2Update/'") &&
+    generator.includes("anchor.href = exportCanvas.toDataURL('image/png')"), 'Screenshot footer is missing the website link');
   const before = vm.runInContext('patch', context);
   fakeWindow.scrollY = 300;
   vm.runInContext('smoothRegenerate()', context);
