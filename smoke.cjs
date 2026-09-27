@@ -60,7 +60,17 @@ setImmediate(() => {
     assert.strictEqual(element('side-note').textContent, "Unfortunately, it isn't real.");
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
     vm.runInContext("setLanguage('zh')", context);
-    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length})', context);
+    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, entries:patch.entries})', context);
+    const descriptions = Object.values(stats.entries).flat().filter(entry => entry.thought).map(entry => entry.thought[0]);
+    assert.strictEqual(new Set(descriptions).size, descriptions.length, 'Repeated card explanation');
+    for (const entries of Object.values(stats.entries)) {
+      assert(!entries.some((entry, index) => entry.thought && entries.slice(0, index).some(previous => !previous.thought)), 'Explained item must come first within its pool');
+    }
+    for (const entry of stats.entries.Colorless) {
+      if (entry.thought) assert(!/这一角色|该角色|当前角色|this character/.test(entry.thought.join(' ')), 'Colorless treated as character');
+    }
+    assert(!/低\/高进阶|low\/high Ascension|未升级版本|升级版本|基础版本/.test(zh + en), 'Outdated patch phrasing');
+    assert(!/从 \d|\d 点(?:伤害|格挡|生命)/.test(zh), 'Extra spaces in Chinese patch text');
     stats.kinds.forEach(kind => kinds.add(kind));
     newCount += stats.kinds.filter(kind => kind === 'new').length;
     generalCount += Number(stats.general > 0);
@@ -69,6 +79,10 @@ setImmediate(() => {
   for (const kind of ['number','keyword','upgrade','baseOnly','rework']) assert(kinds.has(kind), `Missing ${kind} changes`);
   assert(newCount < 65, 'New cards are too common');
   assert(generalCount > 90, 'General changes are too rare');
+  const enemyExamples = vm.runInContext('({both:enemyLine(enemyChanges[0]), high:enemyLine(enemyChanges[2])})', context);
+  assert(enemyExamples.both.includes('14(18)') && !enemyExamples.both.includes('进阶'));
+  assert(enemyExamples.high.includes('进阶8时') && enemyExamples.high.includes('24-28(26-30)'));
+  assert(generator.includes("document.querySelector('.news-panel')") && generator.includes("panel.querySelector('.sidebar').style.display = 'none'"), 'Screenshot misses full article or sidebar exclusion');
   const before = vm.runInContext('patch', context);
   fakeWindow.scrollY = 300;
   vm.runInContext('smoothRegenerate()', context);

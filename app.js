@@ -30,7 +30,12 @@ const ui = {
   bugs: ['错误修复：', 'BUG FIXES:'], modding: ['模组开发：', 'MODDING:'],
   general: ['通用', 'General'], enemies: ['敌人', 'Enemies'], multiplayer: ['多人游戏', 'Multiplayer']
 };
-const tr = pair => pair[language === 'zh' ? 0 : 1];
+function compactZh(value) {
+  return String(value).replace(/([\p{Script=Han}])\s+(?=[\d(（])/gu, '$1')
+    .replace(/([\d)）])\s+(?=[\p{Script=Han}])/gu, '$1')
+    .replace(/([\p{Script=Han}])\s+(?=[，。；：！？])/gu, '$1');
+}
+const tr = pair => language === 'zh' ? compactZh(pair[0]) : pair[1];
 const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
 })[char]);
@@ -122,13 +127,13 @@ const generalChanges = [
   ['遭遇精英战斗后的卡牌奖励现在更有机会出现稀有卡牌。', 'Card rewards after Elite fights now have a slightly higher chance to contain Rare cards.']
 ];
 const enemyChanges = [
-  {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)', tier:['低/高进阶','low/high Ascension']},
-  {name:['巨斧机器人','Axebot'], move:['连环击','The One-Two'], kind:'damage', old:'10(11) × 2', next:'11(12) × 2', tier:['低/高进阶','low/high Ascension']},
-  {name:['外骨骼虫','Exoskeleton'], kind:'hp', old:'24–28(26–30)', next:'24–28(28–32)', tier:['低/高进阶','low/high Ascension']},
-  {name:['电球头','Globe Head'], kind:'galvanic', old:'6(8)', next:'6(9)', tier:['低/高进阶','low/high Ascension']},
-  {name:['虱虫之祖','Louse Progenitor'], kind:'strength', old:'5(7)', next:'5(8)', tier:['低/高进阶','low/high Ascension']},
-  {name:['灵魂异鱼','Soul Fysh'], move:['泄气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)', tier:['低/高进阶','low/high Ascension']},
-  {name:['蜂群术士','Entomancer'], kind:'hp', old:'145(165)', next:'150(170)', tier:['低/高进阶','low/high Ascension']},
+  {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)'},
+  {name:['巨斧机器人','Axebot'], move:['连环击','The One-Two'], kind:'damage', old:'10(11)×2', next:'11(12)×2'},
+  {name:['外骨骼虫','Exoskeleton'], kind:'hp', old:'24-28(26-30)', next:'24-28(28-32)', ascension:8},
+  {name:['电球头','Globe Head'], kind:'galvanic', old:'6(8)', next:'6(9)', ascension:9},
+  {name:['虱虫之祖','Louse Progenitor'], kind:'strength', old:'5(7)', next:'5(8)', ascension:9},
+  {name:['灵魂异鱼','Soul Fysh'], move:['泄气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)'},
+  {name:['蜂群术士','Entomancer'], kind:'hp', old:'145(165)', next:'150(170)'},
   {name:['巨斧机器人','Axebot'], move:['磨砺','Sharpen'], kind:'intent', text:['“磨砺”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
   {name:['虱虫之祖','Louse Progenitor'], move:['蜷缩成长','Curl and Grow'], kind:'intent', text:['“蜷缩成长”不再获得格挡，意图由防御＋增益改为增益。','Curl and Grow no longer gains Block, changing its intent from Defend + Buff to Buff.']},
   {name:['灵魂异鱼','Soul Fysh'], move:['凝视','Gaze'], kind:'intent', text:['“凝视”现在会造成少量伤害，意图由负面效果改为攻击＋负面效果。','Gaze now deals a small amount of damage, changing its intent from Debuff to Attack + Debuff.']}
@@ -244,7 +249,7 @@ function changeUpgrade(card) {
       return {kind:'upgrade', card, label, old:String(variable.up), next:String(next),
         thought: pick([
           ['此前升级这张牌的收益不够明显。我们希望这次调整能让升级成为一个更有竞争力的选择。', 'The upgrade was not offering enough. We want this to make upgrading the card a more competitive choice.'],
-          ['基础版本在当前强度下已经能发挥作用，因此这次只调整升级后的效果。', 'The base card is doing its job, so this pass only changes the upgraded effect.']
+          ['未升级时已经足够实用，所以这次只调整升级效果。', 'The base card is doing its job, so this pass only changes the upgraded effect.']
         ])};
     }
   }
@@ -261,7 +266,7 @@ function changeBaseOnly(card) {
   if (next === variable.base) return null;
   return {kind:'baseOnly', card, label: variableLabel(card, variable),
     old:String(variable.base), next:String(next),
-    thought:['基础版本的表现落后于升级版本，因此这次只提高未升级时的数值。', 'The base card was lagging behind its upgrade, so this change only raises the unupgraded value.']};
+    thought:['未升级时的表现落后于升级后，因此这次只调整基础数值。', 'The base card was lagging behind its upgrade, so this change only adjusts the unupgraded value.']};
 }
 function changeDiverse(card) {
   const choices = ['number', 'number', 'number', 'upgrade', 'baseOnly'];
@@ -282,7 +287,7 @@ function cleanDescription(template, card, lang) {
     if (modifier.startsWith('starIcons')) return valuePair(v.base, v.up) + (lang === 'zh' ? '点辉星' : ' Stars');
     return valuePair(v.base, v.up);
   }).replace(/\{singleStarIcon\}/g, lang === 'zh' ? '1点辉星' : '1 Star')
-    .replace(/\s+/g, ' ').trim();
+    .replace(/\s+/g, ' ').replace(/([。！？；，]) +(?=[\p{Script=Han}])/gu, '$1').trim();
 }
 function canShowOriginalDescription(card) {
   const supported = /\{[A-Za-z][A-Za-z0-9_]*:(?:diff\(\)|energyIcons\(\)|starIcons\(\))\}|\{singleStarIcon\}/g;
@@ -312,10 +317,28 @@ function makeNew(pool) {
   const bank = wordBanks[pool];
   const index = rand(0, bank.names.length - 1);
   return { kind: 'new', pool, name: bank.names[index], effect: bank.effects[index],
-    thought: pick([
+    thought: pick(pool === 'Colorless' ? [
+      ['我们想让无色牌为不同牌组提供一种新的选择。', 'We wanted this Colorless card to offer a new option across different decks.'],
+      ['这张无色牌可能会与多种机制产生互动，我们会关注它的表现。', 'This Colorless card may interact with several mechanics, and we’ll watch how it performs.']
+    ] : [
       ['我们想给这一角色再添一种围绕其核心资源构筑的选择。', 'We wanted another build option around this character’s core resource.'],
       ['这张牌旨在连接已有的两种玩法，具体强度还需要更多测试。', 'This card aims to connect two existing play patterns; its exact power still needs more testing.']
     ]) };
+}
+function organizeEntries(entries) {
+  const usedThoughts = new Set();
+  for (const pool of pools) {
+    for (const entry of entries[pool]) {
+      if (!entry.thought) continue;
+      const key = entry.thought[0];
+      if (usedThoughts.has(key)) entry.thought = null;
+      else usedThoughts.add(key);
+    }
+    entries[pool].sort((a, b) => Number(Boolean(b.thought)) - Number(Boolean(a.thought)));
+  }
+}
+function changeDirection(oldValue, nextValue) {
+  return Number.parseInt(nextValue, 10) > Number.parseInt(oldValue, 10) ? '提升至' : '降低至';
 }
 function generatePatch() {
   const entries = {};
@@ -358,6 +381,7 @@ function generatePatch() {
       next: valuePair(next, item.up ? item.up + next - item.base : next),
       buff: direction * (item.benefit ? 1 : -1) > 0 };
   });
+  organizeEntries(entries);
   patch = { intro: pick(intros), bridge: pick(bridges), ending: pick(endings), entries, ancients,
     general: Math.random() < .8 ? shuffle(generalChanges).slice(0, rand(1, 2)) : [],
     enemies: shuffle(enemyChanges).slice(0, rand(2, 4)),
@@ -372,41 +396,47 @@ function generatePatch() {
 function lineFor(entry) {
   if (entry.kind === 'new') {
     const name = escapeHtml(tr(entry.name)), effect = escapeHtml(tr(entry.effect));
-    return '<li>' + (language === 'zh' ? '新增卡牌 <strong>' : 'Added <strong>') + name + '</strong>: <em>' + effect + '</em></li>' + thoughtFor(entry);
+    return '<li>' + (language === 'zh' ? '新增卡牌<strong>' : 'Added <strong>') + name + (language === 'zh' ? '</strong>：<em>' : '</strong>: <em>') + effect + '</em></li>' + thoughtFor(entry);
   }
   const name = escapeHtml(language === 'zh' ? entry.card.zh : entry.card.en);
   if (entry.kind === 'remove')
-    return '<li>' + (language === 'zh' ? '移除卡牌 <strong>' : 'Removed <strong>') + name + '</strong>.</li>' + thoughtFor(entry);
+    return '<li>' + (language === 'zh' ? '移除卡牌<strong>' : 'Removed <strong>') + name + (language === 'zh' ? '</strong>。</li>' : '</strong>.</li>') + thoughtFor(entry);
   if (entry.kind === 'rework')
-    return '<li>' + (language === 'zh' ? '重做 <strong>' : 'Reworked <strong>') + name + '</strong>: “' +
-      escapeHtml(tr(entry.old)) + '” → “' + escapeHtml(tr(entry.next)) + '”</li>' + thoughtFor(entry);
-  if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') +
-    name + '</strong>: ' + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
+    return '<li>' + (language === 'zh' ? '重做<strong>' : 'Reworked <strong>') + name + (language === 'zh' ? '</strong>：由“' : '</strong>: “') +
+      escapeHtml(tr(entry.old)) + (language === 'zh' ? '”改为“' : '” → “') + escapeHtml(tr(entry.next)) + '”</li>' + thoughtFor(entry);
+  if (entry.kind === 'keyword') return '<li>' + (language === 'zh' ? '调整<strong>' : 'Changed <strong>') +
+    name + (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(entry.text)) + '</li>' + thoughtFor(entry);
   if (['upgrade','upgradeCost','baseOnly'].includes(entry.kind)) {
-    const prefix = entry.kind === 'baseOnly' ? ['未升级版本','unupgraded version'] : ['升级版本','upgraded version'];
     const label = entry.kind === 'upgradeCost' ? ['耗能','cost'] : entry.label;
-    return '<li>' + (language === 'zh' ? '增强 <strong>' : 'Buffed <strong>') + name + '</strong>: ' +
-      escapeHtml(tr(prefix)) + ' ' + escapeHtml(tr(label)) + ' ' +
-      (language === 'zh' ? '由 ' : 'changed from ') + entry.old + ' → ' + entry.next + '</li>' + thoughtFor(entry);
+    if (language === 'zh') {
+      const subject = (entry.kind === 'baseOnly' ? '基础' : '升级效果的') + tr(label);
+      return '<li>加强了<strong>' + name + '</strong>：' + escapeHtml(subject) + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next + '</li>' + thoughtFor(entry);
+    }
+    const prefix = entry.kind === 'baseOnly' ? 'unupgraded' : 'upgraded';
+    return '<li>Buffed <strong>' + name + '</strong>: ' + prefix + ' ' + escapeHtml(tr(label)) +
+      ' changed from ' + entry.old + ' → ' + entry.next + '</li>' + thoughtFor(entry);
   }
   const label = escapeHtml(tr(entry.label));
-  const verb = language === 'zh' ? (entry.benefit ? '增强' : '削弱') : (entry.benefit ? 'Buffed' : 'Nerfed');
-  const change = language === 'zh' ? label + '从 ' + entry.old + ' → ' + entry.next :
+  const verb = language === 'zh' ? (entry.benefit ? '加强了' : '削弱了') : (entry.benefit ? 'Buffed' : 'Nerfed');
+  const change = language === 'zh' ? label + '从' + entry.old + changeDirection(entry.old, entry.next) + entry.next :
     label + ' changed from ' + entry.old + ' → ' + entry.next;
-  return '<li>' + verb + ' <strong>' + name + '</strong>: ' + escapeHtml(change) + '</li>' + thoughtFor(entry);
+  return '<li>' + verb + (language === 'zh' ? '<strong>' : ' <strong>') + name +
+    (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(change) + '</li>' + thoughtFor(entry);
 }
 function thoughtFor(entry) { return entry.thought ? '<li class="thought">' + escapeHtml(tr(entry.thought)) + '</li>' : ''; }
 function list(lines) { return '<ul>' + lines.map(line => '<li>' + escapeHtml(tr(line)) + '</li>').join('') + '</ul>'; }
 function enemyLine(item) {
   const name = escapeHtml(tr(item.name));
-  if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') + name +
-    '</strong>: ' + escapeHtml(tr(item.text)) + '</li>';
+  if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '调整了<strong>' : 'Changed <strong>') + name +
+    (language === 'zh' ? '</strong>：' : '</strong>: ') + escapeHtml(tr(item.text)) + '</li>';
   const stat = item.kind === 'hp' ? ['生命值', 'HP'] : item.kind === 'strength' ? ['力量增益', 'Strength gain'] :
     item.kind === 'galvanic' ? ['电流增益', 'Galvanic power'] : ['伤害', 'damage'];
-  const move = item.move ? escapeHtml(tr(item.move)) + ' ' : '';
-  return '<li>' + (language === 'zh' ? '调整 <strong>' : 'Changed <strong>') + name + '</strong>: ' +
-    move + escapeHtml(tr(stat)) + (language === 'zh' ? '（低/高进阶）由 ' : ' at low/high Ascension from ') +
-    item.old + ' → ' + item.next + '</li>';
+  const move = item.move ? escapeHtml(tr(item.move)) + (language === 'zh' ? '的' : ' move ') : '';
+  if (language === 'zh') return '<li>加强了<strong>' + name + '</strong>：' +
+    (item.ascension ? '进阶' + item.ascension + '时' : '') + move + escapeHtml(tr(stat)) +
+    '从' + item.old + '提升至' + item.next + '</li>';
+  return '<li>Buffed <strong>' + name + '</strong>: ' + move + escapeHtml(tr(stat)) +
+    (item.ascension ? ' at A' + item.ascension : '') + ' increased from ' + item.old + ' → ' + item.next + '</li>';
 }
 function render() {
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
@@ -426,19 +456,21 @@ function render() {
   if (!patch) return;
   let html = '<p>' + escapeHtml(tr(patch.intro)) + '</p><p>' + escapeHtml(tr(patch.bridge)) + '</p>';
   html += '<h2>' + tr(ui.content) + '</h2>';
-  if (patch.general.length) html += '<h3>' + tr(ui.general) + ':</h3>' + list(patch.general);
-  html += '<h3>' + (language === 'zh' ? '先古之民:' : 'Ancients:') + '</h3><ul>';
-  html += patch.ancients.map(item => '<li>' + (language === 'zh' ? (item.buff ? '增强 ' : '削弱 ') :
-    (item.buff ? 'Buffed ' : 'Nerfed ')) + '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) + '</strong>: ' +
-    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从 ' : ' changed from ') + item.old + ' → ' + item.next + '</li>').join('');
+  if (patch.general.length) html += '<h3>' + tr(ui.general) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.general);
+  html += '<h3>' + (language === 'zh' ? '先古之民：' : 'Ancients:') + '</h3><ul>';
+  html += patch.ancients.map(item => '<li>' + (language === 'zh' ? (item.buff ? '加强了' : '削弱了') :
+    (item.buff ? 'Buffed ' : 'Nerfed ')) + '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) +
+    (language === 'zh' ? '</strong>：' : '</strong>: ') +
+    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从' : ' changed from ') + item.old +
+    (language === 'zh' ? changeDirection(item.old, item.next) : ' → ') + item.next + '</li>').join('');
   html += '</ul>';
-  html += '<h3>' + tr(ui.enemies) + ':</h3><ul>' + patch.enemies.map(enemyLine).join('') + '</ul>';
+  html += '<h3>' + tr(ui.enemies) + (language === 'zh' ? '：' : ':') + '</h3><ul>' + patch.enemies.map(enemyLine).join('') + '</ul>';
   for (const pool of pools) {
-    html += '<h3>' + tr(poolNames[pool]) + ':</h3><ul>';
+    html += '<h3>' + tr(poolNames[pool]) + (language === 'zh' ? '：' : ':') + '</h3><ul>';
     html += patch.entries[pool].map(lineFor).join('');
     html += '</ul>';
   }
-  html += '<h2>' + tr(ui.ux) + '</h2><h3>' + tr(ui.general) + ':</h3>' + list(patch.ux);
+  html += '<h2>' + tr(ui.ux) + '</h2><h3>' + tr(ui.general) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.ux);
   html += '<h2>' + tr(ui.bugs) + '</h2>' + list(patch.bugs.map(x => x[0]));
   html += '<h2>' + tr(ui.modding) + '</h2>' + list(patch.modding);
   html += '<p class="closing">' + escapeHtml(tr(patch.ending)) + '</p>';
@@ -490,17 +522,23 @@ $('share-button').addEventListener('click', async () => {
   const button = $('share-button');
   button.disabled = true;
   try {
-    const article = $('article-content');
+    const article = document.querySelector('.news-panel');
     const canvas = await html2canvas(article, {
       backgroundColor: '#292c32', scale: 2, useCORS: true,
       windowWidth: Math.max(window.innerWidth, 900),
       onclone: clonedDocument => {
-        const clone = clonedDocument.getElementById('article-content');
-        clone.style.width = '720px';
-        clone.style.padding = '18px 20px 25px';
-        clone.style.background = '#292c32';
-        clone.style.fontSize = '15px';
-        clone.style.lineHeight = '1.42';
+        const panel = clonedDocument.querySelector('.news-panel');
+        panel.style.width = '760px';
+        panel.style.maxWidth = '760px';
+        panel.querySelector('.sidebar').style.display = 'none';
+        panel.querySelector('.layout').style.display = 'block';
+        const content = panel.querySelector('#article-content');
+        content.style.padding = '0 20px 18px';
+        content.style.fontSize = '15px';
+        content.style.lineHeight = '1.42';
+        panel.querySelector('.breadcrumbs').style.padding = '20px 20px 0';
+        panel.querySelector('h1').style.margin = '20px 20px 26px';
+        panel.querySelector('.article-footer').style.padding = '18px 20px 22px';
       }
     });
     const anchor = document.createElement('a');
