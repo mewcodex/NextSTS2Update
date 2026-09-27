@@ -5,6 +5,7 @@ const rand = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 const shuffle = values => [...values].sort(() => Math.random() - 0.5);
 let language = 'zh';
 let catalog = [];
+let world = null;
 let patch = null;
 let liked = false;
 let disliked = false;
@@ -107,12 +108,12 @@ const nerfThoughts = [
   ['我们想为其他选择留出一点空间，并会继续观察它的表现。', 'We want to leave a little room for other options, and we’ll keep watching how it performs.']
 ];
 const wordBanks = {
-  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']], effects: [['失去2点生命值。获得1(2)点力量。', 'Lose 2 HP. Gain 1(2) Strength.'], ['造成13(17)点伤害。本场战斗中每消耗过1张牌，额外造成2点伤害。', 'Deal 13(17) damage. Deal 2 additional damage for each card you have Exhausted this combat.'], ['获得9(12)点格挡。如果你在本回合失去过生命值，抽1张牌。', 'Gain 9(12) Block. If you lost HP this turn, draw 1 card.']] },
-  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影佯攻', 'Umbral Feint']], effects: [['给予 5(7) 层中毒。若目标已中毒，抽 1 张牌。', 'Apply 5(7) Poison. If the target is Poisoned, draw 1 card.'], ['造成 7(10) 点伤害。下个回合将 1 张小刀加入你的手牌。', 'Deal 7(10) damage. Add a Shiv to your hand next turn.'], ['获得 6(9) 点格挡。丢弃 1 张牌，然后抽 1 张牌。', 'Gain 6(9) Block. Discard 1 card, then draw 1 card.']] },
-  Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']], effects: [['获得 2(3) 点辉星。你下一张攻击牌造成的伤害增加 4 点。', 'Gain 2(3) Stars. Your next Attack deals 4 additional damage.'], ['造成 10(14) 点伤害。若你拥有辉星，获得 5 点格挡。', 'Deal 10(14) damage. If you have Stars, gain 5 Block.'], ['获得 7(10) 点格挡。下个回合开始时获得 1 点辉星。', 'Gain 7(10) Block. At the start of your next turn, gain 1 Star.']] },
-  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['墓园圣歌', 'Grave Canticle']], effects: [['造成 8(11) 点伤害。奥斯提的最大生命值增加 3(4) 点。', 'Deal 8(11) damage. Osty gains 3(4) Max HP.'], ['奥斯提失去 4 点生命值。获得 11(15) 点格挡。', 'Osty loses 4 HP. Gain 11(15) Block.'], ['抽 2(3) 张牌。若奥斯提存活，再获得 1 点能量。消耗。', 'Draw 2(3) cards. If Osty is alive, gain 1 Energy. Exhaust.']] },
-  Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']], effects: [['造成 9(12) 点伤害。生成 1 个闪电充能球。', 'Deal 9(12) damage. Channel 1 Lightning Orb.'], ['获得 8(11) 点格挡。若你本回合激发过充能球，抽 1 张牌。', 'Gain 8(11) Block. If you Evoked an Orb this turn, draw 1 card.'], ['获得 1(2) 点集中。下个回合开始时失去 1 点集中。', 'Gain 1(2) Focus. At the start of your next turn, lose 1 Focus.']] },
-  Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']], effects: [['从 3(4) 张随机无色牌中选择 1 张加入手牌。本回合可以免费打出。消耗。', 'Choose 1 of 3(4) random Colorless cards to add to your hand. It is free to play this turn. Exhaust.'], ['抽 2(3) 张牌。将一张手牌放到抽牌堆顶部。', 'Draw 2(3) cards. Put a card from your hand on top of your Draw Pile.'], ['获得 7(10) 点格挡。你下一张打出的牌消耗。', 'Gain 7(10) Block. The next card you play Exhausts.']] }
+  Ironclad: { names: [['余烬契约', 'Ember Pact'], ['裂甲冲锋', 'Sunder Charge'], ['血铸号令', 'Bloodforged Order']] },
+  Silent: { names: [['薄雾陷阱', 'Mist Trap'], ['回声毒刃', 'Echoing Fang'], ['暗影佯攻', 'Umbral Feint']] },
+  Regent: { names: [['星轨校准', 'Stellar Alignment'], ['王权余辉', 'Royal Afterglow'], ['日冕敕令', 'Corona Decree']] },
+  Necrobinder: { names: [['灰骨回响', 'Ashbone Echo'], ['亡者借力', 'Borrowed Bones'], ['墓园圣歌', 'Grave Canticle']] },
+  Defect: { names: [['电弧缓存', 'Arc Cache'], ['棱镜散射', 'Prism Scatter'], ['过载协议', 'Overload Protocol']] },
+  Colorless: { names: [['临时同盟', 'Temporary Alliance'], ['空白契约', 'Blank Contract'], ['奇巧装置', 'Curious Device']] }
 };
 // Each drafted effect has a fixed card frame, so reworks and new cards can show
 // the same type and cost details as the original patch notes.
@@ -125,8 +126,7 @@ const draftFrames = {
   Colorless: [{ type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }, { type: 'Skill', cost: 1 }]
 };
 const ancientReferences = [
-  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', type: 'relic', stat: ['金币', 'Gold'], base: 999, direction: -1, benefit: true },
-  { name: 'Regalite', zh: '君王矿石', type: 'relic', stat: ['格挡', 'Block'], base: 4, benefit: true },
+  { name: "Nonupeipe's Signet Ring", zh: '诺奴佩普的图章戒指', type: 'relic', stat: ['金币', 'Gold'], base: 888, direction: -1, benefit: true },
   { name: "Tezcatara's Brightest Flame", zh: '特兹卡塔拉的至亮之焰', type: 'card', stat: ['最大生命值损失', 'Max HP loss'], base: 2, benefit: false },
   { name: "Pael's Relax", zh: '佩尔的放松', type: 'card', stat: ['格挡', 'Block'], base: 16, up: 18, benefit: true }
 ];
@@ -138,22 +138,9 @@ const generalChanges = [
   ['精英战斗后的卡牌奖励现在略微提高了稀有牌的出现概率。', 'Rare cards now appear slightly more often in card rewards after Elite combats.']
 ];
 const enemyChanges = [
-  {name:['巨斧机器人','Axebot'], move:['上勾锤击','Hammer Uppercut'], kind:'damage', old:'14(18)', next:'15(20)'},
-  {name:['巨斧机器人','Axebot'], move:['两连击','The One-Two'], kind:'damage', old:'10(11)×2', next:'11(12)×2'},
-  {name:['外骨骼虫','Exoskeleton'], kind:'hp', old:'24-28(26-30)', next:'24-28(28-32)', ascension:8},
-  {name:['电球头','Globe Head'], kind:'galvanic', old:'6(8)', next:'6(9)', ascension:9},
-  {name:['虱虫之祖','Louse Progenitor'], kind:'strength', old:'5(7)', next:'5(8)', ascension:9},
-  {name:['灵魂异鱼','Soul Fysh'], move:['排气','De-Gas'], kind:'damage', old:'16(18)', next:'17(19)'},
-  {name:['蜂群术士','Entomancer'], kind:'hp', old:'145(165)', next:'150(170)'},
   {name:['巨斧机器人','Axebot'], move:['打磨','Sharpen'], kind:'intent', text:['“打磨”现在会同时获得格挡，意图由增益改为防御＋增益。','Sharpen now also gains Block, changing its intent from Buff to Defend + Buff.']},
   {name:['虱虫之祖','Louse Progenitor'], move:['蜷身成长','Curl and Grow'], kind:'intent', text:['“蜷身成长”不再获得格挡，意图由防御＋增益改为增益。','Curl and Grow no longer gains Block, changing its intent from Defend + Buff to Buff.']},
   {name:['灵魂异鱼','Soul Fysh'], move:['凝视','Gaze'], kind:'intent', text:['“凝视”现在会造成少量伤害，意图由负面效果改为攻击＋负面效果。','Gaze now deals a small amount of damage, changing its intent from Debuff to Attack + Debuff.']}
-];
-const relicChanges = [
-  ['加强了小邮箱：休息时获得的随机药水数量从2瓶提升至3瓶。', 'Buffed Tiny Mailbox relic: random potions gained when Resting increased from 2 → 3.'],
-  ['修改了弹珠袋：稀有度由普通改为罕见。', 'Changed Bag of Marbles relic: rarity changed from Common → Uncommon.'],
-  ['修改了摆动球：额外回合现在也会计入抽牌的回合计数。', 'Changed Pendulum relic: extra turns now count toward its card draw timer.'],
-  ['加强了永冻冰晶：在战斗中首次打出能力牌时获得的格挡略微增加。', 'Buffed Permafrost relic: slightly increased the Block gained from the first Power played in combat.']
 ];
 const eventChanges = [
   ['加强了蘑菇饥渴事件：“芳香蘑菇”选项升级的卡牌数量从2张提升至3张。', 'Buffed Hungry for Mushrooms event: the Fragrant Mushroom option now upgrades 3 cards instead of 2.'],
@@ -376,14 +363,11 @@ function canShowOriginalDescription(card) {
       .every(match => knownVariables.has(match[1])));
 }
 function makeRework(card) {
-  const bank = wordBanks[card.pool];
-  const compatible = bank.effects.map((_, index) => index).filter(index => draftFrames[card.pool][index].type === card.type);
-  const index = pick(compatible);
-  const frame = draftFrames[card.pool][index];
-  const upgradeDiscount = card.cost - card.upCost;
-  return { kind: 'rework', card, old: [cleanDescription(card.descZh, card, 'zh'), cleanDescription(card.descEn, card, 'en')], next: bank.effects[index],
+  const generated = cardEffectGenerator.generate(card.pool, card.type, card.cost);
+  return { kind: 'rework', card, old: [cleanDescription(card.descZh, card, 'zh'), cleanDescription(card.descEn, card, 'en')], next: generated.effect,
     oldFrame: { rarity: card.rarity, type: card.type, cost: card.cost, upCost: card.upCost },
-    newFrame: { rarity: card.rarity, type: frame.type, cost: frame.cost, upCost: Math.max(0, frame.cost - upgradeDiscount) },
+    newFrame: { rarity: card.rarity, type: generated.type, cost: generated.cost, upCost: generated.upCost },
+    signature: generated.signature,
     thought: pick([
       ['我们希望它有更明确的构筑方向，同时保留原本的主题。', 'We want this to point toward a clearer build while keeping the card’s original theme.'],
       ['旧版本很难在合适的时机发挥作用，所以我们尝试了更直接的效果。', 'The old version had trouble finding the right moment, so we’re trying a more direct effect.'],
@@ -393,10 +377,12 @@ function makeRework(card) {
 function makeNew(pool, existingEntries = []) {
   const bank = wordBanks[pool];
   const available = bank.names.map((_, index) => index).filter(index =>
-    !existingEntries.some(entry => entry.kind === 'rework' && entry.next === bank.effects[index]));
+    !existingEntries.some(entry => entry.kind === 'new' && entry.name === bank.names[index]));
   const index = pick(available);
-  return { kind: 'new', pool, name: bank.names[index], effect: bank.effects[index],
-    frame: { rarity: 'Uncommon', ...draftFrames[pool][index], upCost: draftFrames[pool][index].cost },
+  const generated = cardEffectGenerator.generate(pool, draftFrames[pool][index].type);
+  return { kind: 'new', pool, name: bank.names[index], effect: generated.effect,
+    frame: { rarity: 'Uncommon', type: generated.type, cost: generated.cost, upCost: generated.upCost },
+    signature: generated.signature,
     thought: pick(pool === 'Colorless' ? [
       ['我们想让无色牌为不同牌组提供一种新的选择。', 'We wanted this Colorless card to offer a new option across different decks.'],
       ['这张无色牌可能会与多种机制产生互动，我们会关注它的表现。', 'This Colorless card may interact with several mechanics, and we’ll watch how it performs.']
@@ -440,7 +426,7 @@ function generatePatch() {
   });
   const reworkPool = pick(pools.slice(0, 5));
   const reworkCard = pick(catalog.filter(c => c.pool === reworkPool && !used.has(c.en) &&
-    ['Common', 'Uncommon', 'Rare'].includes(c.rarity) && ['Attack', 'Skill'].includes(c.type) &&
+    ['Common', 'Uncommon', 'Rare'].includes(c.rarity) && ['Attack', 'Skill', 'Power'].includes(c.type) &&
     c.cost >= 0 && c.upCost >= 0 && c.descEn.length < 190 &&
     canShowOriginalDescription(c)));
   if (reworkCard) { entries[reworkPool].splice(rand(0, entries[reworkPool].length), 0, makeRework(reworkCard)); used.add(reworkCard.en); }
@@ -465,11 +451,18 @@ function generatePatch() {
       next: valuePair(next, item.up ? item.up + next - item.base : next),
       buff: direction * (item.benefit ? 1 : -1) > 0 };
   });
+  if (Math.random() < .68) ancients.unshift(worldGenerator.ancientMove(world));
+  if (Math.random() < .55) ancients.push(worldGenerator.relic(world, 'Ancient'));
+  const enemies = worldGenerator.enemies(world);
+  if (Math.random() < .28) {
+    const intent = pick(enemyChanges.filter(item => !enemies.some(enemy => enemy.name[1] === item.name[1])));
+    if (intent) enemies.push(intent);
+  }
   organizeEntries(entries);
   patch = { intro: pick(intros), bridge: pick(bridges), ending: pick(endings), entries, ancients,
     general: Math.random() < .8 ? shuffle(generalChanges).slice(0, rand(1, 2)) : [],
-    enemies: shuffle(enemyChanges).slice(0, rand(2, 4)),
-    relics: Math.random() < .56 ? shuffle(relicChanges).slice(0, rand(1, 2)) : [],
+    enemies,
+    relics: Math.random() < .72 ? worldGenerator.relics(world) : [],
     events: Math.random() < .46 ? shuffle(eventChanges).slice(0, 1) : [],
     writing: Math.random() < .62 ? shuffle(writingLines).slice(0, rand(1, 2)) : [],
     localization: Math.random() < .48 ? shuffle(localizationLines).slice(0, rand(1, 2)) : [],
@@ -542,6 +535,25 @@ function lineFor(entry) {
 }
 function thoughtFor(entry) { return entry.thought ? '<li class="thought">' + escapeHtml(tr(entry.thought)) + '</li>' : ''; }
 function list(lines) { return '<ul>' + lines.map(line => '<li>' + escapeHtml(tr(line)) + '</li>').join('') + '</ul>'; }
+function relicLine(item) {
+  const name = escapeHtml(tr(item.name));
+  return '<li>' + (language === 'zh' ? '修改了<strong>' : 'Changed <strong>') + name +
+    (language === 'zh' ? '</strong>：由“' : '</strong> relic: from “') + escapeHtml(tr(item.old)) +
+    (language === 'zh' ? '”改为“' : '” → “') + escapeHtml(tr(item.next)) + '”</li>';
+}
+function ancientLine(item) {
+  if (item.kind === 'relic') return relicLine(item);
+  if (item.kind === 'move') {
+    const owner = escapeHtml(tr(item.owner)), relic = escapeHtml(tr(item.relic));
+    return '<li>' + (language === 'zh' ? '将<strong>' + owner + '</strong>的<strong>' + relic + '</strong>从选项池' + item.from + '移至选项池' + item.to + '。' :
+      'Moved <strong>' + owner + '&#39;s ' + relic + '</strong> relic from option pool ' + item.from + ' to option pool ' + item.to + '.') + '</li>';
+  }
+  return '<li>' + (language === 'zh' ? (item.buff ? '加强了' : '削弱了') : (item.buff ? 'Buffed ' : 'Nerfed ')) +
+    '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) +
+    (language === 'zh' ? '</strong>：' : '</strong> ' + item.type + ': ') +
+    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从' : ' ' + englishDirection(item.old, item.next) + ' from ') + item.old +
+    (language === 'zh' ? changeDirection(item.old, item.next) : ' → ') + item.next + '</li>';
+}
 function enemyLine(item) {
   const name = escapeHtml(tr(item.name));
   if (item.kind === 'intent') return '<li>' + (language === 'zh' ? '修改了<strong>' : 'Changed <strong>') + name +
@@ -549,11 +561,11 @@ function enemyLine(item) {
   const stat = item.kind === 'hp' ? ['生命值', 'HP'] : item.kind === 'strength' ? ['力量增益', 'Strength gain'] :
     item.kind === 'galvanic' ? ['电流增益', 'Galvanic power'] : ['伤害', 'damage'];
   const move = item.move ? escapeHtml(tr(item.move)) + (language === 'zh' ? '动作的' : ' move ') : '';
-  if (language === 'zh') return '<li>加强了<strong>' + name + '</strong>：' +
+  if (language === 'zh') return '<li>' + (item.buff ? '加强了' : '削弱了') + '<strong>' + name + '</strong>：' +
     move + escapeHtml(tr(stat)) + (item.ascension ? '在进阶' + item.ascension + '时' : '') +
-    '从' + item.old + '提升至' + item.next + '</li>';
-  return '<li>Buffed <strong>' + name + '</strong>: ' + move + escapeHtml(tr(stat)) +
-    (item.ascension ? ' at A' + item.ascension : '') + ' increased from ' + item.old + ' → ' + item.next + '</li>';
+    '从' + item.old + (item.buff ? '提升至' : '降低至') + item.next + '</li>';
+  return '<li>' + (item.buff ? 'Buffed' : 'Nerfed') + ' <strong>' + name + '</strong>: ' + move + escapeHtml(tr(stat)) +
+    (item.ascension ? ' at A' + item.ascension : '') + (item.buff ? ' increased from ' : ' decreased from ') + item.old + ' → ' + item.next + '</li>';
 }
 function render() {
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
@@ -575,11 +587,7 @@ function render() {
   html += '<h2>' + tr(ui.content) + '</h2>';
   if (patch.general.length) html += '<h3>' + tr(ui.general) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.general);
   html += '<h3>' + (language === 'zh' ? '先古之民：' : 'Ancients:') + '</h3><ul>';
-  html += patch.ancients.map(item => '<li>' + (language === 'zh' ? (item.buff ? '加强了' : '削弱了') :
-    (item.buff ? 'Buffed ' : 'Nerfed ')) + '<strong>' + escapeHtml(language === 'zh' ? item.zh : item.name) +
-    (language === 'zh' ? '</strong>：' : '</strong> ' + item.type + ': ') +
-    escapeHtml(tr(item.stat)) + (language === 'zh' ? '从' : ' ' + englishDirection(item.old, item.next) + ' from ') + item.old +
-    (language === 'zh' ? changeDirection(item.old, item.next) : ' → ') + item.next + '</li>').join('');
+  html += patch.ancients.map(ancientLine).join('');
   html += '</ul>';
   html += '<h3>' + tr(ui.enemies) + (language === 'zh' ? '：' : ':') + '</h3><ul>' + patch.enemies.map(enemyLine).join('') + '</ul>';
   for (const pool of pools) {
@@ -587,7 +595,7 @@ function render() {
     html += patch.entries[pool].map(lineFor).join('');
     html += '</ul>';
   }
-  if (patch.relics.length) html += '<h3>' + tr(ui.relics) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.relics);
+  if (patch.relics.length) html += '<h3>' + tr(ui.relics) + (language === 'zh' ? '：' : ':') + '</h3><ul>' + patch.relics.map(relicLine).join('') + '</ul>';
   if (patch.events.length) html += '<h3>' + tr(ui.events) + (language === 'zh' ? '：' : ':') + '</h3>' + list(patch.events);
   if (patch.writing.length) html += '<h2>' + tr(ui.writing) + '</h2>' + list(patch.writing);
   if (patch.localization.length) html += '<h2>' + tr(ui.localization) + '</h2>' + list(patch.localization);
@@ -681,12 +689,17 @@ $('share-button').addEventListener('click', async () => {
     button.disabled = false;
   }
 });
-fetch('cards.json').then(response => {
-  if (!response.ok) throw new Error('Card catalog unavailable');
+Promise.all(['cards.json', 'world.json'].map(async path => {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(path + ' unavailable');
   return response.json();
-}).then(data => { catalog = data; $('generate-main').disabled = false; }).catch(() => {
+})).then(([cards, worldData]) => {
+  catalog = cards;
+  world = worldData;
+  $('generate-main').disabled = false;
+}).catch(() => {
   $('generate-main').disabled = true;
-  $('generate-main').textContent = language === 'zh' ? '卡牌数据加载失败' : 'Card data unavailable';
+  $('generate-main').textContent = language === 'zh' ? '游戏数据加载失败' : 'Game data unavailable';
 });
 $('generate-main').disabled = true;
 render();

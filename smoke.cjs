@@ -4,7 +4,18 @@ const vm = require('vm');
 const assert = require('assert');
 
 const cards = JSON.parse(fs.readFileSync('cards.json', 'utf8'));
+const world = JSON.parse(fs.readFileSync('world.json', 'utf8'));
 assert.strictEqual(cards.length, 567, 'Native card catalog must be complete');
+assert.strictEqual(world.monsters.length, 111, 'Native enemy roster must be complete');
+assert.strictEqual(world.relics.length, 289, 'Native relic roster must be complete');
+assert.strictEqual(world.ancients.length, 8, 'Native Ancient roster must be complete');
+const nativeCardsFile = path.join(__dirname, '..', 'chaos', 'ChaosCardGenerator', 'Data', 'native_reference_cards.json');
+if (fs.existsSync(nativeCardsFile)) {
+  const sourceCards = JSON.parse(fs.readFileSync(nativeCardsFile, 'utf8')).Cards;
+  assert.strictEqual(cards.length, sourceCards.length, 'A native card is missing from the shipped catalog');
+  for (const source of sourceCards) assert(cards.some(card => card.en === source.Title.en && card.pool === source.Pool),
+    `Missing native card: ${source.NativeId}`);
+}
 const generator = fs.readFileSync('app.js', 'utf8');
 assert(fs.readFileSync('index.html', 'utf8').includes('STSAM'), 'Site brand must be STSAM');
 assert(!/奥斯蒂|锻造次数|颗星星|引导 1 个闪电充能球|镀层|DoomPower: \['末日'/.test(generator), 'Outdated game terminology');
@@ -22,8 +33,10 @@ function element(id) {
 const context = vm.createContext({
   document: { getElementById: element, documentElement: {}, title: '' },
   window: fakeWindow, requestAnimationFrame: callback => frames.push(callback), console,
-  fetch: async () => ({ ok: true, json: async () => cards })
+  fetch: async url => ({ ok: true, json: async () => url === 'world.json' ? world : cards })
 });
+vm.runInContext(fs.readFileSync('card-generator.js', 'utf8'), context);
+vm.runInContext(fs.readFileSync('world-generator.js', 'utf8'), context);
 vm.runInContext(generator, context);
 setImmediate(() => {
   const terms = vm.runInContext('({osty:labels.OstyDamage[0],summon:labels.Summon[0],forge:labels.Forge[0],stars:labels.Stars[0],doom:labels.DoomPower[0],plating:labels.PlatingPower[0]})', context);
@@ -50,17 +63,34 @@ setImmediate(() => {
     for (const name of bank.names) {
       assert(!cards.some(card => card.en.toLowerCase() === name[1].toLowerCase() || card.zh === name[0]), `New card name already exists: ${name[1]}`);
     }
-    for (const effect of bank.effects) {
-      const upgrade = effect[0].match(/(\d+)\((\d+)\)/);
-      assert(upgrade && Number(upgrade[2]) > Number(upgrade[1]), `New card has no stronger upgraded effect: ${effect[1]}`);
-    }
   }
   for (const [pool, bank] of Object.entries(banks)) {
-    assert.strictEqual(draftFrames[pool].length, bank.effects.length, `Missing drafted card frame for ${pool}`);
+    assert.strictEqual(draftFrames[pool].length, bank.names.length, `Missing drafted card frame for ${pool}`);
     for (const frame of draftFrames[pool]) {
       assert(['Attack', 'Skill', 'Power'].includes(frame.type) && frame.cost >= 0, `Invalid drafted card frame for ${pool}`);
     }
   }
+  const createEffect = vm.runInContext('cardEffectGenerator.generate', context);
+  const effectSignatures = new Set();
+  for (const pool of Object.keys(banks)) for (const type of ['Attack', 'Skill', 'Power']) for (let i = 0; i < 20; i++) {
+    const card = createEffect(pool, type);
+    const upgrade = card.effect[0].match(/(\d+)\((\d+)\)/);
+    assert(upgrade && Number(upgrade[2]) > Number(upgrade[1]), `Generated ${pool} ${type} has no stronger upgrade`);
+    assert(card.cost >= card.upCost && card.upCost >= 0 && card.type === type, 'Generated frame is invalid');
+    if (pool === 'Colorless') assert(!/当前角色|该角色|this character/.test(card.effect.join(' ')), 'Colorless effect implies a character');
+    if (card.signature.includes('deal.damage.all')) assert(!/目标|the target|Apply 2 Poison|Apply 3 Doom/.test(card.effect.join(' ')), 'Area attack contains a single-target rider');
+    effectSignatures.add(card.signature);
+  }
+  assert(effectSignatures.size > 200, 'Component generator is not diverse enough');
+  const worldTools = vm.runInContext('worldGenerator', context);
+  for (const type of ['Normal', 'Elite', 'Boss']) assert(worldTools.enemyCandidates(world, type).length >= 10, `Missing ${type} enemy candidates`);
+  for (const rarity of ['Common', 'Uncommon', 'Rare', 'Shop', 'Event', 'Starter', 'Ancient'])
+    assert(worldTools.relicCandidates(world, rarity).length >= 4, `Missing ${rarity} relic candidates`);
+  assert.strictEqual(world.relics.find(relic => relic.id === 'REGALITE').rarity, 'Uncommon', 'Regalite must be a regular relic');
+  assert(world.relics.find(relic => relic.id === 'REGALITE').descEn.includes('first time') &&
+    world.relics.find(relic => relic.id === 'REGALITE').descEn.includes('[blue]4[/blue]'), 'Regalite baseline is older than v0.111');
+  assert.strictEqual(world.monsters.find(monster => monster.id === 'AXEBOT').moves.find(move => move.id === 'HAMMER_UPPERCUT').damage.normal, 14,
+    'Axebot baseline is older than v0.111');
   const relicFile = path.join(__dirname, '..', 'export', '111', 'localization', 'zhs', 'relics.json');
   const eventFile = path.join(__dirname, '..', 'export', '111', 'localization', 'zhs', 'events.json');
   if (fs.existsSync(relicFile) && fs.existsSync(eventFile)) {
@@ -80,7 +110,7 @@ setImmediate(() => {
       'SOUL_FYSH.moves.DE_GAS.title':'排气'
     })) assert.strictEqual(monsters[key], name, `Incorrect enemy move translation: ${key}`);
   }
-  assert.strictEqual(vm.runInContext('ancientReferences[0].base', context), 999);
+  assert.strictEqual(vm.runInContext('ancientReferences[0].base', context), 888);
   assert.strictEqual(vm.runInContext("numericStep(999,-1,'Gold')", context), 888);
   const upgradeExhaustCandidates = [];
   for (let index = 0; index < cards.length; index++) {
@@ -99,6 +129,8 @@ setImmediate(() => {
   assert.deepStrictEqual(upgradeExhaustCandidates.sort(), ['Graveblast', 'Hologram'], 'Upgrade Exhaust candidates changed without review');
   const samples = new Set();
   const kinds = new Set();
+  const enemyIds = new Set(), enemyTypes = new Set(), relicIds = new Set(), relicRarities = new Set();
+  let ancientMoves = 0;
   let newCount = 0, generalCount = 0, extraCount = 0;
   for (let i = 0; i < 150; i++) {
     vm.runInContext('generatePatch()', context);
@@ -120,8 +152,18 @@ setImmediate(() => {
     assert(!/undefined|\{[^}]+\}/.test(en), 'Unresolved content in English');
     assert(en.includes('<ul class="rework-details"><li>Old: ') && en.includes('</li><li>New: '), 'English rework lacks old/new card details');
     vm.runInContext("setLanguage('zh')", context);
-    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length+patch.localization.length, entries:patch.entries, bugs:patch.bugs})', context);
+    const stats = vm.runInContext('({kinds:Object.values(patch.entries).flat().map(x=>x.kind), general:patch.general.length, extra:patch.relics.length+patch.events.length+patch.writing.length+patch.localization.length, entries:patch.entries, bugs:patch.bugs, enemies:patch.enemies, relics:patch.relics, ancients:patch.ancients})', context);
     assert(stats.bugs.every(bug => ['general', 'enemies', 'multiplayer'].includes(bug.category)), 'Bug entry has no official-style section');
+    for (const enemy of stats.enemies) if (enemy.id) { enemyIds.add(enemy.id); enemyTypes.add(enemy.type); }
+    for (const relic of stats.relics) {
+      relicIds.add(relic.id); relicRarities.add(relic.rarity);
+      assert(relic.rarity !== 'Ancient', 'Ancient relic leaked into the regular relic section');
+    }
+    for (const ancient of stats.ancients) {
+      if (ancient.kind === 'move') ancientMoves++;
+      if (ancient.kind === 'relic') assert.strictEqual(ancient.rarity, 'Ancient', 'Regular relic placed under Ancients');
+      assert(ancient.name !== 'Regalite' && ancient.id !== 'REGALITE', 'Regalite placed under Ancients');
+    }
     const descriptions = Object.values(stats.entries).flat().filter(entry => entry.thought).map(entry => entry.thought[0]);
     assert.strictEqual(new Set(descriptions).size, descriptions.length, 'Repeated card explanation');
     for (const entries of Object.values(stats.entries)) {
@@ -133,8 +175,8 @@ setImmediate(() => {
     for (const entry of Object.values(stats.entries).flat()) {
       if (entry.kind === 'rework') {
         const detail = vm.runInContext('lineFor', context)(entry);
-        assert(/旧：[^<]+ - (攻击牌|技能牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'Original rework card frame is missing');
-        assert(/新：[^<]+ - (攻击牌|技能牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'New rework card frame is missing');
+        assert(/旧：[^<]+ - (攻击牌|技能牌|能力牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'Original rework card frame is missing');
+        assert(/新：[^<]+ - (攻击牌|技能牌|能力牌) - 耗能\d+(?:\(\d+\))? - (普通|罕见|稀有) - “/.test(detail), 'New rework card frame is missing');
         assert.strictEqual(entry.oldFrame.type, entry.card.type, 'Original rework type differs from catalog');
         assert.strictEqual(entry.oldFrame.rarity, entry.card.rarity, 'Original rework rarity differs from catalog');
         assert.strictEqual(entry.oldFrame.cost, entry.card.cost, 'Original rework cost differs from catalog');
@@ -173,9 +215,9 @@ setImmediate(() => {
   assert(newCount < 65, 'New cards are too common');
   assert(generalCount > 90, 'General changes are too rare');
   assert(extraCount > 100, 'Additional patch sections are too rare');
-  const enemyExamples = vm.runInContext('({both:enemyLine(enemyChanges[0]), high:enemyLine(enemyChanges[2])})', context);
-  assert(enemyExamples.both.includes('14(18)') && !enemyExamples.both.includes('进阶'));
-  assert(enemyExamples.high.includes('进阶8时') && enemyExamples.high.includes('24-28(26-30)'));
+  assert(enemyIds.size > 55 && enemyTypes.size === 3, 'Enemy updates do not cover the full roster and types');
+  assert(relicIds.size > 35 && relicRarities.size === 6, 'Relic updates do not cover the full roster and rarities');
+  assert(ancientMoves > 70, 'Ancient option moves are too rare');
   assert(generator.includes("document.querySelector('.news-panel')") && generator.includes("panel.querySelector('.sidebar').style.display = 'none'"), 'Screenshot misses full article or sidebar exclusion');
   const before = vm.runInContext('patch', context);
   fakeWindow.scrollY = 300;
